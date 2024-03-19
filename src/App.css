@@ -17,7 +17,9 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-
+table img {
+  width: 24px;
+}
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
