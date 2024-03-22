@@ -1,0 +1,11 @@
+.item_club {
+	display: flex;
+	width: 100%;
+	height: fit-content;
+	flex-flow: row nowrap;
+	align-items: center;
+	gap: 10px;
+}
+.item_club img {
+	height: 29px;
+}
