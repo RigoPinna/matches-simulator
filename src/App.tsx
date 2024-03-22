@@ -110,6 +110,7 @@ const teams: TTemas[] = [
   },
 ];
 function App() {
+<<<<<<< Updated upstream
   const getMatches = () => {
     const matches: TMatches[] = [];
     for (let i = 0; i < teams.length; i++) {
@@ -188,6 +189,86 @@ function App() {
       </table>
     </>
   );
+=======
+	const getMatches = () => {
+		const matches: TMatches[] = [];
+		for (let i = 0; i < teams.length; i++) {
+			for (let j = i + 1; j < teams.length; j++) {
+				matches.push({
+					uuid: getUuid(),
+					local: {
+						uuid: teams[i].uuid,
+						name: teams[i].team,
+						score: 0,
+					},
+					visit: {
+						uuid: teams[j].uuid,
+						name: teams[j].team,
+						score: 0,
+					},
+				});
+			}
+		}
+		return matches;
+	};
+	const getJourney = (matches: TMatches[]) => {
+		const numberOfJourney = teams.length - 1;
+		const matchesByJourney = matches.length / teams.length;
+		let matchesLength = matches.length;
+		const journeys = [];
+		let matchesCopy = [...matches];
+		for (let i = 0; i < numberOfJourney; i++) {
+			const journey = [];
+			for (let j = 0; j < matchesByJourney; j++) {
+				const match = matchesCopy[Math.floor(Math.random() * matchesLength)];
+				matchesCopy = [...matchesCopy.filter(m => m.uuid !== match.uuid)];
+				journey.push(match);
+				matchesLength--;
+			}
+			journeys.push(journey);
+		}
+		return journeys;
+	};
+	const matches = getMatches();
+	const journeys = getJourney(matches);
+	return (
+		<>
+			<table className='blueTable'>
+				<thead>
+					<tr>
+						<th>Club</th>
+						<th>MG</th>
+						<th>W</th>
+						<th>D</th>
+						<th>L</th>
+						<th>Pts</th>
+						<th>GF</th>
+						<th>GA</th>
+						<th>GD</th>
+					</tr>
+				</thead>
+				<tbody>
+					{teams.map(team => (
+						<tr key={team.uuid}>
+							<td>
+								<img src={team.image} />
+								{team.team}
+							</td>
+							<td>{team.matches}</td>
+							<td>{team.wins}</td>
+							<td>{team.draws}</td>
+							<td>{team.loses}</td>
+							<td>{team.points}</td>
+							<td>{team.gf}</td>
+							<td>{team.ga}</td>
+							<td>{team.gd}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</>
+	);
+>>>>>>> Stashed changes
 }
 
 export default App;
