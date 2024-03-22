@@ -1,5 +1,5 @@
 import { Main } from '../../components/layouts';
-import { Header } from '../../components/ui';
+import { Header, MatchList } from '../../components/ui';
 import { Table } from '../../components/ui/Table';
 
 export const SeasonPage = () => {
@@ -10,6 +10,7 @@ export const SeasonPage = () => {
 			</Header>
 			<Main>
 				<Table />
+				<MatchList />
 			</Main>
 		</>
 	);
