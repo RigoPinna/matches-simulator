@@ -1,12 +1,12 @@
 import { MainRouter } from './router';
-import { SeasonProvide } from './store';
+import { SeasonProvider } from './store';
 
 function App() {
 	return (
 		<>
-			<SeasonProvide>
+			<SeasonProvider>
 				<MainRouter />
-			</SeasonProvide>
+			</SeasonProvider>
 		</>
 	);
 }
