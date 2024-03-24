@@ -1,5 +1,6 @@
 import { MouseEvent, ReactNode } from 'react';
 import styles from './styles.module.css';
+
 interface IButton {
 	onClick: (event?: MouseEvent<HTMLButtonElement>) => void;
 	children: ReactNode;

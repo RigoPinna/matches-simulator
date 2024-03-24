@@ -1,0 +1,32 @@
+.home_header > div {
+	justify-content: space-between;
+}
+.container_empty {
+	display: flex;
+	flex-direction: column;
+
+	width: 100%;
+	gap: 25px;
+	color: var(--primary);
+	justify-content: center;
+	align-items: center;
+}
+.container_empty > svg {
+	width: 79px;
+	height: 79px;
+	transform: rotate(15deg);
+}
+.container_empty > h3 {
+	max-width: 206px;
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+}
+.btn_create_season {
+	width: 100%;
+	justify-content: center;
+	padding: 14px 20px;
+
+	border-radius: 14px;
+	font-size: 16px;
+}

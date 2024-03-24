@@ -1,0 +1,27 @@
+.current_seasson {
+	margin-bottom: 16px;
+}
+.badge {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: var(--primary);
+	width: 36px;
+	height: 36px;
+	border-radius: 100%;
+	font-size: 18px;
+	font-weight: bold;
+}
+.seasson_item {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+}
+.seasson_info h4 {
+	font-size: 18px;
+}
+.seasson_info p {
+	font-size: 12px;
+	color: var(--grey-400);
+}
