@@ -1,5 +1,6 @@
 import { v4 as getUuid } from 'uuid';
 import { IItemTable, TSeason, TState, globalState } from './SeassonContext';
+import { getJourneys } from '../../helpers';
 
 export type TType =
 	| '[SEASSON] - SET SEASSONS'
@@ -27,7 +28,32 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const newSeason: TSeason = {
 				uuid: getUuid(),
 				number: state.seasons.length + 1,
-				fase: 'REGULAR',
+				fase: {
+					regular: {
+						status: 'ACTIVE',
+						matches: {
+							uuid: getUuid(),
+							title: 'Regular',
+							matches: getJourneys(state.clubs),
+						},
+					},
+					semifinal: {
+						status: 'BLOCKED',
+						matches: {
+							uuid: getUuid(),
+							title: 'Semifinal',
+							matches: [],
+						},
+					},
+					final: {
+						status: 'BLOCKED',
+						matches: {
+							uuid: getUuid(),
+							title: 'final',
+							matches: [],
+						},
+					},
+				},
 				isCurrent: true,
 				table: state.clubs.map(
 					club =>

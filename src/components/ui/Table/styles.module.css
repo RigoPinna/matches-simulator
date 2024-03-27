@@ -27,7 +27,7 @@
 	font-weight: normal;
 	color: var(--grey-100);
 }
-.body tr .table_head_club:nth-child(-n + 4) {
+.body tr:nth-child(-n + 4) .table_head_club {
 	border-left: 3px solid #164778;
 }
 .table_socre_item {

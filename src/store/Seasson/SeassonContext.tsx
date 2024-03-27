@@ -6,7 +6,8 @@ import chivas from '../../assets/chivas-logo.png';
 import cruz_azul from '../../assets/cruz-azul-logo.png';
 import monterrey from '../../assets/monterrey-logo.png';
 import santos from '../../assets/santos-logo.png';
-interface IClub {
+export interface IClub {
+	uuid: string;
 	image: string;
 	name: string;
 }
@@ -22,12 +23,30 @@ export interface IItemTable {
 	ga: number;
 	gd: number;
 }
-export type TFase = 'REGULAR' | 'SEMI' | 'FINAL';
+interface ITeamMatch extends IClub {
+	score: number;
+}
+
+export type TMatches = { uuid: string; local: ITeamMatch; visit: ITeamMatch };
+export type TMatch = {
+	uuid: string;
+	title: string;
+	matches: Array<TMatches[]>;
+};
+export type TFase = {
+	status: 'ACTIVE' | 'BLOCKED' | 'FINISHED';
+	matches: TMatch;
+};
 export type TSeason = {
 	uuid: string;
 	number: number;
 	isCurrent: boolean;
-	fase: TFase;
+	fase: {
+		regular: TFase;
+		semifinal: TFase;
+		final: TFase;
+	};
+	matches?: TMatch[];
 	table: IItemTable[];
 	winder?: string;
 };
@@ -35,26 +54,32 @@ export type TSeason = {
 const seasons: TSeason[] = [];
 const clubs: IClub[] = [
 	{
+		uuid: '1',
 		name: 'América',
 		image: america,
 	},
 	{
+		uuid: '2',
 		name: 'Chivas',
 		image: chivas,
 	},
 	{
+		uuid: '3',
 		name: 'Cruz Azul',
 		image: cruz_azul,
 	},
 	{
+		uuid: '4',
 		name: 'Monterrey',
 		image: monterrey,
 	},
 	{
+		uuid: '5',
 		name: 'Santos',
 		image: santos,
 	},
 	{
+		uuid: '6',
 		name: 'Tigres',
 		image: tigres,
 	},

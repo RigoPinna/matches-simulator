@@ -1,8 +1,11 @@
 import styles from './styles.module.css';
-import club from '../../../assets/america-logo.png';
 import { ItemTable } from './ItemTable';
+import { IItemTable } from '../../../store';
 
-export const Table = () => {
+interface ITable {
+	table: IItemTable[];
+}
+export const Table = ({ table }: ITable) => {
 	return (
 		<table className={styles.table}>
 			<thead className={styles.table_head}>
@@ -19,36 +22,9 @@ export const Table = () => {
 				</tr>
 			</thead>
 			<tbody className={styles.body}>
-				<ItemTable
-					positions={1}
-					club={{
-						image: club,
-						name: 'America',
-					}}
-					mg={5}
-					mw={3}
-					md={1}
-					ml={1}
-					pts={9}
-					gf={10}
-					ga={5}
-					gd={5}
-				/>
-				<ItemTable
-					positions={2}
-					club={{
-						image: club,
-						name: 'America',
-					}}
-					mg={5}
-					mw={2}
-					md={1}
-					ml={2}
-					pts={6}
-					gf={5}
-					ga={5}
-					gd={0}
-				/>
+				{table.map((team, index) => (
+					<ItemTable key={`table-item-${team.club.image}`} positions={index + 1} {...team} />
+				))}
 			</tbody>
 		</table>
 	);
