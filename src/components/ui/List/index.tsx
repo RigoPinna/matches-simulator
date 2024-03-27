@@ -5,12 +5,17 @@ import { ArrowRight } from '../../icons';
 type TItemList = {
 	className?: string;
 	children: ReactNode;
-	onClick?: (evt: MouseEvent<HTMLElement>) => void;
+	onClick?: (evt?: MouseEvent<HTMLElement>) => void;
 };
 
 const Item = ({ children, onClick, className = '' }: TItemList) => {
 	return (
-		<li className={styles.list_item} style={{ cursor: onClick ? 'pointer' : '' }}>
+		<li
+			className={styles.list_item}
+			style={{ cursor: onClick ? 'pointer' : '' }}
+			onClick={() => {
+				onClick && onClick();
+			}}>
 			<div className={`${styles.wrapper_item} ${className}`}>{children}</div>
 			{onClick && (
 				<div className={styles.icon}>

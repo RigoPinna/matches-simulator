@@ -17,7 +17,7 @@ export const MainRouter = () => {
 		<BrowserRouter>
 			<Routes>
 				<Route index element={<HomaPage />} />
-				<Route path='season' element={<SeasonPage />} />
+				<Route path='seasson/:sid' element={<SeasonPage />} />
 			</Routes>
 		</BrowserRouter>
 	);
