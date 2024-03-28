@@ -13,9 +13,19 @@
 	cursor: pointer;
 	align-items: center;
 }
+.secondary {
+	background: transparent;
+	color: var(--primary);
+}
 .button:hover {
 	background: #409cff;
 }
+.secondary:hover {
+	background: transparent;
+}
 .button:active {
 	background: var(--primary);
+}
+.secondary:active {
+	color: #409cff;
 }

@@ -1,13 +1,14 @@
 import { v4 as getUuid } from 'uuid';
-import { IItemTable, TSeason, TState, globalState } from './SeassonContext';
+import { IItemTable, TMatches, TSeason, TState, globalState } from './SeassonContext';
 import { getJourneys } from '../../helpers';
+import { getRandomScore } from '../../helpers/getRandomScore';
 
 export type TType =
 	| '[SEASSON] - SET SEASSONS'
 	| '[SEASSON] - NEW SEASSON'
 	| '[SEASSON] - UPDATE FASE'
 	| '[SEASSON] - UPDATE TABLE'
-	| '[SEASSON] - ADD MATCH SCORE'
+	| '[SEASSON-REGULAR] - ADD MATCH SCORE'
 	| '[SEASSON] - ORDER TABLE';
 
 export type TAction = {
@@ -36,6 +37,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 							title: 'Regular',
 							matches: getJourneys(state.clubs),
 						},
+						currentJourney: 1,
 					},
 					semifinal: {
 						status: 'BLOCKED',
@@ -78,7 +80,33 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const seasons = [...oldSeassons, newSeason];
 			return { ...state, seasons };
 		}
+		case '[SEASSON-REGULAR] - ADD MATCH SCORE': {
+			const { uuid, matches } = action.payload as { uuid: string; matches: TMatches[] };
+			const season = state.seasons.find(s => s.uuid === uuid) as TSeason;
+			const matchesWithScore = matches.map(match => getRandomScore(match));
+			const journeys = season.fase.regular.matches.matches;
+			const currentJourney = season.fase.regular.currentJourney;
+			journeys[currentJourney - 1] = matchesWithScore;
 
+			const updatedSeason: TSeason = {
+				...season,
+				fase: {
+					...season.fase,
+					regular: {
+						...season.fase.regular,
+						currentJourney: currentJourney + 1,
+						matches: {
+							...season.fase.regular.matches,
+							matches: journeys,
+						},
+					},
+				},
+			};
+			return {
+				...state,
+				seasons: [...state.seasons, updatedSeason],
+			};
+		}
 		default:
 			return state;
 	}

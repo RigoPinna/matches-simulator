@@ -23,11 +23,13 @@ const getMatches = (clubs: IClub[]) => {
 					...clubs[j],
 					score: 0,
 				},
+				status: 'TODO',
 			});
 		}
 	}
 	return matches;
 };
+
 /**
  * The function `getJourneys` generates a schedule of matches for a given set of clubs by randomly
  * assigning matches to each journey.
@@ -40,18 +42,32 @@ const getMatches = (clubs: IClub[]) => {
  */
 export const getJourneys = (clubs: IClub[]) => {
 	const matches = getMatches(clubs);
-	const numberOfJourney = clubs.length - 1;
-	const matchesByJourney = matches.length / clubs.length;
-
+	const numbersOfJourney = clubs.length - 1;
+	const matchesByJourney = matches.length / numbersOfJourney;
 	const journeys = [];
-
-	for (let i = 0; i < numberOfJourney; i++) {
+	const clubsByJourney = new Set<string>();
+	let matchesCopy = [...matches];
+	for (let i = 0; i < numbersOfJourney; i++) {
 		const journey: Array<TMatches> = [];
-		for (let j = 0; j < matchesByJourney; j++) {
-			//TODO: Add the function to get maches pre journey,
+		let aux = 0;
+		while (journey.length < matchesByJourney && aux < 100) {
+			const match = matchesCopy[Math.floor(Math.random() * matchesCopy.length)];
+			if (!clubsByJourney.has(match.local.uuid) && !clubsByJourney.has(match.visit.uuid)) {
+				journey.push(match);
+				clubsByJourney.add(match.local.uuid);
+				clubsByJourney.add(match.visit.uuid);
+				matchesCopy = [...matchesCopy.filter(m => m.uuid !== match.uuid)];
+			}
+			if (aux === 99) {
+				matchesCopy = [...matchesCopy.filter(m => m.uuid !== match.uuid)];
+				journey.push(match);
+				break;
+			}
+			aux++;
 		}
+		clubsByJourney.clear();
 		journeys.push(journey);
 	}
-	console.log(journeys);
+
 	return journeys;
 };
