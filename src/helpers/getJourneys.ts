@@ -1,5 +1,5 @@
 import { v4 as getUuid } from 'uuid';
-import { IClub, TMatches } from '../store';
+import { IClub, TJourney, TMatches } from '../store';
 
 /**
  * The function `getMatches` generates match pairings between clubs with initial scores set to 0.
@@ -44,7 +44,7 @@ export const getJourneys = (clubs: IClub[]) => {
 	const matches = getMatches(clubs);
 	const numbersOfJourney = clubs.length - 1;
 	const matchesByJourney = matches.length / numbersOfJourney;
-	const journeys = [];
+	const journeys: TJourney[] = [];
 	const clubsByJourney = new Set<string>();
 	let matchesCopy = [...matches];
 	for (let i = 0; i < numbersOfJourney; i++) {
@@ -66,7 +66,10 @@ export const getJourneys = (clubs: IClub[]) => {
 			aux++;
 		}
 		clubsByJourney.clear();
-		journeys.push(journey);
+		journeys.push({
+			jid: getUuid(),
+			value: journey,
+		});
 	}
 
 	return journeys;

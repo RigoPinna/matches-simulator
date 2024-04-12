@@ -1,13 +1,29 @@
-import { TMatches } from '../store';
-
-export const getWinner = ({ local, visit }: TMatches) => {
+import { ITeamMatch, TMatches } from '../store';
+export type TWinner = {
+	type: 'LOCAL' | 'VISITOR' | 'DRAW';
+	winner: ITeamMatch;
+	loser: ITeamMatch;
+};
+export const getWinner = ({ local, visit }: TMatches): TWinner => {
 	switch (true) {
 		case local.score > visit.score:
-			return local.uuid;
+			return {
+				type: 'LOCAL',
+				winner: local,
+				loser: visit,
+			};
 		case local.score < visit.score:
-			return visit.uuid;
+			return {
+				type: 'VISITOR',
+				winner: visit,
+				loser: local,
+			};
 
 		default:
-			return undefined;
+			return {
+				type: 'DRAW',
+				winner: local,
+				loser: visit,
+			};
 	}
 };
