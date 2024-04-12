@@ -13,7 +13,16 @@ const Primary = ({ children, onClick, className = '' }: IButton) => {
 		</button>
 	);
 };
+
+const Secondary = ({ children, onClick, className }: IButton) => {
+	return (
+		<button className={`${styles.button} ${styles.secondary} ${className}`} onClick={onClick}>
+			{children}
+		</button>
+	);
+};
 const Button = {
 	Primary,
+	Secondary,
 };
 export default Button;
