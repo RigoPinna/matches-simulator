@@ -1,0 +1,7 @@
+.wrapper_table {
+	position: sticky;
+	top: 65px;
+	z-index: 2;
+	background: var(--bg-body);
+	transform: translateX(-1px);
+}

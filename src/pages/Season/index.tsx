@@ -5,23 +5,13 @@ import { Table } from '../../components/ui/Table';
 import { useContext, useMemo } from 'react';
 import { SeassonContext } from '../../store';
 import { ArrowLeft } from '../../components/icons';
-
+import styles from './styles.module.css';
 export const SeasonPage = () => {
 	const { seasons } = useContext(SeassonContext);
 	const navigate = useNavigate();
 	const { sid } = useParams();
 
 	const season = useMemo(() => seasons.find(({ uuid }) => uuid === sid), [seasons, sid]);
-	const table = useMemo(() => {
-		//TODO: Add the function to order the table by GD(Goals Difference), this function only order by Pts
-		if (season?.table) {
-			return season?.table.sort((a, b) => {
-				return a.pts - b.pts;
-			});
-		}
-		return [];
-	}, [season?.table]);
-	console.log(season?.fase);
 	return (
 		<>
 			<Header>
@@ -31,7 +21,9 @@ export const SeasonPage = () => {
 				<h1>Season {season?.number}</h1>
 			</Header>
 			<Main>
-				<Table table={table} />
+				<div className={styles.wrapper_table}>
+					<Table table={season?.table || []} />
+				</div>
 				{season?.fase.regular.matches.matches.map((journey, i) => (
 					<MatchList
 						key={`jy=${i}`}
