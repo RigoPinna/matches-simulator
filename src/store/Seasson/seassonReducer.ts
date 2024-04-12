@@ -1,6 +1,6 @@
 import { v4 as getUuid } from 'uuid';
-import { IItemTable, TMatches, TSeason, TState, globalState } from './SeassonContext';
-import { getJourneys } from '../../helpers';
+import { IItemTable, TJourney, TSeason, TState, globalState } from './SeassonContext';
+import { getJourneys, orderTable } from '../../helpers';
 import { getRandomScore } from '../../helpers/getRandomScore';
 
 export type TType =
@@ -81,15 +81,21 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			return { ...state, seasons };
 		}
 		case '[SEASSON-REGULAR] - ADD MATCH SCORE': {
-			const { uuid, matches } = action.payload as { uuid: string; matches: TMatches[] };
+			const { uuid, matches } = action.payload as { uuid: string; matches: TJourney };
 			const season = state.seasons.find(s => s.uuid === uuid) as TSeason;
-			const matchesWithScore = matches.map(match => getRandomScore(match));
-			const journeys = season.fase.regular.matches.matches;
+			const matchesWithScore: TJourney = {
+				jid: matches.jid,
+				value: matches.value.map(match => getRandomScore(match)),
+			};
+			const tableOrded = orderTable(season.table, matchesWithScore);
 			const currentJourney = season.fase.regular.currentJourney;
-			journeys[currentJourney - 1] = matchesWithScore;
+			const updatedJourneys = season.fase.regular.matches.matches.map(jry => {
+				return jry.jid === matchesWithScore.jid ? matchesWithScore : jry;
+			});
 
-			const updatedSeason: TSeason = {
+			const seasonUpdated: TSeason = {
 				...season,
+				table: tableOrded,
 				fase: {
 					...season.fase,
 					regular: {
@@ -97,16 +103,21 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 						currentJourney: currentJourney + 1,
 						matches: {
 							...season.fase.regular.matches,
-							matches: journeys,
+							matches: updatedJourneys,
 						},
 					},
 				},
 			};
+
+			const seasonsUpdated = state.seasons.map(sn =>
+				sn.uuid === seasonUpdated.uuid ? seasonUpdated : sn,
+			);
 			return {
 				...state,
-				seasons: [...state.seasons, updatedSeason],
+				seasons: seasonsUpdated,
 			};
 		}
+
 		default:
 			return state;
 	}

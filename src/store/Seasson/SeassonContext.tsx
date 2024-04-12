@@ -23,15 +23,19 @@ export interface IItemTable {
 	ga: number;
 	gd: number;
 }
-interface ITeamMatch extends IClub {
+export interface ITeamMatch extends IClub {
 	score: number;
 }
 export type TStatusMatch = 'TODO' | 'DONE';
 export type TMatches = { uuid: string; local: ITeamMatch; visit: ITeamMatch; status: TStatusMatch };
+export type TJourney = {
+	jid: string;
+	value: TMatches[];
+};
 export type TMatch = {
 	uuid: string;
 	title: string;
-	matches: Array<TMatches[]>;
+	matches: TJourney[];
 };
 export type TFase = {
 	status: 'ACTIVE' | 'BLOCKED' | 'FINISHED';
