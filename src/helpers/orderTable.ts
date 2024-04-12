@@ -1,10 +1,10 @@
 import { IItemTable, ITeamMatch, TJourney } from '../store';
 import { TWinner, getWinner } from './getWinner';
 
-const updateWinner = (club: ITeamMatch, table: IItemTable[]): IItemTable => {
+const updateWinner = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
 	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + club.score;
+	const wga = currentClub.ga + visitor.score;
 	return {
 		club: {
 			image: club.image,
@@ -21,10 +21,10 @@ const updateWinner = (club: ITeamMatch, table: IItemTable[]): IItemTable => {
 		gd: wgf - wga,
 	};
 };
-const updateLoser = (club: ITeamMatch, table: IItemTable[]): IItemTable => {
+const updateLoser = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
 	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + club.score;
+	const wga = currentClub.ga + visitor.score;
 	return {
 		club: {
 			image: club.image,
@@ -41,10 +41,10 @@ const updateLoser = (club: ITeamMatch, table: IItemTable[]): IItemTable => {
 		gd: wgf - wga,
 	};
 };
-const updateDraw = (club: ITeamMatch, table: IItemTable[]): IItemTable => {
+const updateDraw = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
 	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + club.score;
+	const wga = currentClub.ga + visitor.score;
 	return {
 		club: {
 			image: club.image,
@@ -65,19 +65,19 @@ const updateDraw = (club: ITeamMatch, table: IItemTable[]): IItemTable => {
 const updateClubs = ({ type, winner, loser }: TWinner, table: IItemTable[]): IItemTable[] => {
 	switch (type) {
 		case 'LOCAL': {
-			const local = updateWinner(winner, table);
-			const visit = updateLoser(loser, table);
+			const local = updateWinner(winner, loser, table);
+			const visit = updateLoser(loser, winner, table);
 			return [local, visit];
 		}
 		case 'VISITOR': {
-			const local = updateWinner(winner, table);
-			const visit = updateLoser(loser, table);
+			const local = updateWinner(winner, loser, table);
+			const visit = updateLoser(loser, winner, table);
 			return [local, visit];
 		}
 
 		default: {
-			const local = updateDraw(winner, table);
-			const visit = updateDraw(loser, table);
+			const local = updateDraw(winner, loser, table);
+			const visit = updateDraw(loser, winner, table);
 			return [local, visit];
 		}
 	}
@@ -107,5 +107,16 @@ export const orderTable = (table: IItemTable[], journey: TJourney) => {
 			return club || current;
 		});
 	}
-	return newTable.sort((a, b) => b.pts - a.pts);
+	return newTable.sort((a, b) => {
+		// Ordenar por pts de mayor a menor
+		if (a.pts !== b.pts) {
+			return b.pts - a.pts;
+		}
+		// Si los pts son iguales, ordenar por gd de mayor a menor
+		if (a.gd !== b.gd) {
+			return b.gd - a.gd;
+		}
+		// Si los gd son iguales, ordenar por gf de mayor a menor
+		return b.gf - a.gf;
+	});
 };
