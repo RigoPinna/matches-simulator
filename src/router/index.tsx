@@ -6,7 +6,7 @@ import { SeassonContext } from '../store';
 export const MainRouter = () => {
 	const { dispatch } = useContext(SeassonContext);
 	useEffect(() => {
-		const seassons = JSON.parse(localStorage.getItem('seassons') || '[]');
+		const seassons = JSON.parse(localStorage.getItem('seasons') || '[]');
 		dispatch({
 			type: '[SEASSON] - SET SEASSONS',
 			payload: seassons,

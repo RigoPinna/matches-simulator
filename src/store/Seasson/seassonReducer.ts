@@ -76,7 +76,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				...seasson,
 				isCurrent: false,
 			}));
-			localStorage.setItem('seassons', JSON.stringify([...oldSeassons, newSeason]));
+			localStorage.setItem('seasons', JSON.stringify([...oldSeassons, newSeason]));
 			const seasons = [...oldSeassons, newSeason];
 			return { ...state, seasons };
 		}
@@ -112,6 +112,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const seasonsUpdated = state.seasons.map(sn =>
 				sn.uuid === seasonUpdated.uuid ? seasonUpdated : sn,
 			);
+			localStorage.setItem('seasons', JSON.stringify(seasonsUpdated));
 			return {
 				...state,
 				seasons: seasonsUpdated,
