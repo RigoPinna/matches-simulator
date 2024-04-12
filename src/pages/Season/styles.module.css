@@ -1,7 +1,15 @@
-.wrapper_table {
+.container_table {
+	width: 100%;
 	position: sticky;
 	top: 65px;
 	z-index: 2;
-	background: var(--bg-body);
-	transform: translateX(-1px);
+	background: rgba(23, 23, 23, 0.1);
+	backdrop-filter: blur(33.5px);
+}
+.wrapper_table {
+	/* transform: translateX(-1px); */
+	width: 100%;
+	margin: 0 auto;
+	max-width: 446px;
+	padding: 16px;
 }

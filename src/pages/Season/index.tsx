@@ -20,10 +20,12 @@ export const SeasonPage = () => {
 				</Button.Secondary>
 				<h1>Season {season?.number}</h1>
 			</Header>
-			<Main>
+			<div className={styles.container_table}>
 				<div className={styles.wrapper_table}>
 					<Table table={season?.table || []} />
 				</div>
+			</div>
+			<Main>
 				{season?.fase.regular.matches.matches.map((journey, i) => (
 					<MatchList
 						key={`jy=${i}`}
