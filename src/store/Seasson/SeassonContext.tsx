@@ -38,8 +38,9 @@ export type TMatch = {
 	title: string;
 	matches: TJourney[];
 };
+export type TStatusFase = 'ACTIVE' | 'BLOCKED' | 'FINISHED';
 export type TFase = {
-	status: 'ACTIVE' | 'BLOCKED' | 'FINISHED';
+	status: TStatusFase;
 	matches: TMatch;
 	currentJourney: number;
 };
@@ -50,7 +51,7 @@ export type TSeason = {
 	isCurrent: boolean;
 	fase: {
 		regular: TFase;
-		semifinal: TFase;
+		semifinal: TFase & { winners?: ITeamMatch[] };
 		final: TFase;
 	};
 	matches?: TMatch[];

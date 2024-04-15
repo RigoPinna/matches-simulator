@@ -6,6 +6,7 @@ import styles from './styles.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useCurrentSeasonParams } from '../../hooks';
 import { StatusJourney } from './StatusJournay';
+import { StatusSemifinals } from './StatusSemifinals';
 
 export const SeasonPage = () => {
 	const navigate = useNavigate();
@@ -30,6 +31,7 @@ export const SeasonPage = () => {
 			</div>
 			<Main>
 				<StatusJourney />
+				<StatusSemifinals />
 			</Main>
 		</>
 	);
