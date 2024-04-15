@@ -41,6 +41,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					},
 					semifinal: {
 						status: 'BLOCKED',
+						currentJourney: 1,
 						matches: {
 							uuid: getUuid(),
 							title: 'Semifinal',
@@ -49,6 +50,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					},
 					final: {
 						status: 'BLOCKED',
+						currentJourney: 1,
 						matches: {
 							uuid: getUuid(),
 							title: 'final',
@@ -83,16 +85,18 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 		case '[SEASSON-REGULAR] - ADD MATCH SCORE': {
 			const { uuid, matches } = action.payload as { uuid: string; matches: TJourney };
 			const season = state.seasons.find(s => s.uuid === uuid) as TSeason;
+			const matchesDone = matches.value.map(match => getRandomScore(match));
 			const matchesWithScore: TJourney = {
 				jid: matches.jid,
-				value: matches.value.map(match => getRandomScore(match)),
+				status: matchesDone.some(match => match.status === 'TODO') ? 'TODO' : 'DONE',
+				value: matchesDone,
 			};
 			const tableOrded = orderTable(season.table, matchesWithScore);
 			const currentJourney = season.fase.regular.currentJourney;
 			const updatedJourneys = season.fase.regular.matches.matches.map(jry => {
 				return jry.jid === matchesWithScore.jid ? matchesWithScore : jry;
 			});
-
+			const isFinished = updatedJourneys.some(jourey => jourey.status === 'TODO');
 			const seasonUpdated: TSeason = {
 				...season,
 				table: tableOrded,
@@ -100,7 +104,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					...season.fase,
 					regular: {
 						...season.fase.regular,
-						currentJourney: currentJourney + 1,
+						currentJourney: isFinished ? currentJourney + 1 : currentJourney,
+						status: isFinished ? 'ACTIVE' : 'FINISHED',
 						matches: {
 							...season.fase.regular.matches,
 							matches: updatedJourneys,
