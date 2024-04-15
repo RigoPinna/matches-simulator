@@ -30,6 +30,7 @@ export type TStatusMatch = 'TODO' | 'DONE';
 export type TMatches = { uuid: string; local: ITeamMatch; visit: ITeamMatch; status: TStatusMatch };
 export type TJourney = {
 	jid: string;
+	status: TStatusMatch;
 	value: TMatches[];
 };
 export type TMatch = {
@@ -37,17 +38,20 @@ export type TMatch = {
 	title: string;
 	matches: TJourney[];
 };
+export type TStatusFase = 'ACTIVE' | 'BLOCKED' | 'FINISHED';
 export type TFase = {
-	status: 'ACTIVE' | 'BLOCKED' | 'FINISHED';
+	status: TStatusFase;
 	matches: TMatch;
+	currentJourney: number;
 };
+
 export type TSeason = {
 	uuid: string;
 	number: number;
 	isCurrent: boolean;
 	fase: {
-		regular: TFase & { currentJourney: number };
-		semifinal: TFase;
+		regular: TFase;
+		semifinal: TFase & { winners?: ITeamMatch[] };
 		final: TFase;
 	};
 	matches?: TMatch[];
@@ -89,11 +93,13 @@ const clubs: IClub[] = [
 	},
 ];
 export type TState = {
+	myClub: IClub | undefined;
 	seasons: TSeason[];
 	clubs: IClub[];
 	dispatch: (action: TAction) => void;
 };
 export const globalState: TState = {
+	myClub: clubs[0],
 	seasons,
 	clubs,
 	dispatch: () => {},

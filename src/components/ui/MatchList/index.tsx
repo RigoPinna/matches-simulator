@@ -5,13 +5,21 @@ import { SeassonContext, TJourney } from '../../../store';
 import { ItemMatch } from './ItemMatch';
 import { useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { TType } from '../../../store/Seasson/seassonReducer';
 
 interface IMatchList {
 	title: string;
 	matches: TJourney;
 	isCurrent: boolean;
+	type: 'REGULAR' | 'SEMI' | 'FINAL';
 }
-export const MatchList = ({ title, matches, isCurrent }: IMatchList) => {
+const TYPE_ACTION = {
+	REGULAR: '[SEASSON-REGULAR] - ADD MATCH SCORE',
+	SEMI: '[SEASSON-SEMIFINALS] - ADD MATCH SCORE',
+	FINAL: '[SEASSON-FINAL] - ADD MATCH SCORE',
+};
+Object.freeze(TYPE_ACTION);
+export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 	const { dispatch } = useContext(SeassonContext);
 	const { sid } = useParams();
 	const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +27,7 @@ export const MatchList = ({ title, matches, isCurrent }: IMatchList) => {
 		setIsLoading(true);
 		const id = setTimeout(() => {
 			dispatch({
-				type: '[SEASSON-REGULAR] - ADD MATCH SCORE',
+				type: TYPE_ACTION[type] as TType,
 				payload: {
 					uuid: sid,
 					matches,
@@ -38,7 +46,7 @@ export const MatchList = ({ title, matches, isCurrent }: IMatchList) => {
 						{!isLoading ? (
 							<Button.Primary onClick={simulateMatches} className={styles.btn_simulate}>
 								<Fire />
-								Simular
+								Simulate
 							</Button.Primary>
 						) : (
 							<Loader />

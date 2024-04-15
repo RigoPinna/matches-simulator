@@ -68,6 +68,7 @@ export const getJourneys = (clubs: IClub[]) => {
 		clubsByJourney.clear();
 		journeys.push({
 			jid: getUuid(),
+			status: 'TODO',
 			value: journey,
 		});
 	}

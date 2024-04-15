@@ -1,19 +1,35 @@
 import { v4 as getUuid } from 'uuid';
-import { IItemTable, TJourney, TSeason, TState, globalState } from './SeassonContext';
-import { getJourneys, orderTable } from '../../helpers';
+import {
+	IItemTable,
+	TFase,
+	TJourney,
+	TMatches,
+	TSeason,
+	TState,
+	TStatusFase,
+	globalState,
+} from './SeassonContext';
+import { getJourneys, getWinner, orderTable, setSeasons } from '../../helpers';
 import { getRandomScore } from '../../helpers/getRandomScore';
 
 export type TType =
 	| '[SEASSON] - SET SEASSONS'
 	| '[SEASSON] - NEW SEASSON'
-	| '[SEASSON] - UPDATE FASE'
+	| '[SEASSON] - UPDATED STATUS FASE'
 	| '[SEASSON] - UPDATE TABLE'
 	| '[SEASSON-REGULAR] - ADD MATCH SCORE'
+	| '[SEASSON-SEMIFINALS] - SET MATCHES'
+	| '[SEASSON-SEMIFINALS] - ADD MATCH SCORE'
 	| '[SEASSON] - ORDER TABLE';
 
 export type TAction = {
 	type: TType;
 	payload?: any;
+};
+export type TBlockedFase = {
+	sid: string;
+	type: 'regular' | 'semifinal' | 'final';
+	status: TStatusFase;
 };
 export type TSeasonReducer = (state: TState, action: TAction) => TState;
 
@@ -41,6 +57,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					},
 					semifinal: {
 						status: 'BLOCKED',
+						currentJourney: 1,
+						winners: [],
 						matches: {
 							uuid: getUuid(),
 							title: 'Semifinal',
@@ -49,6 +67,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					},
 					final: {
 						status: 'BLOCKED',
+						currentJourney: 1,
 						matches: {
 							uuid: getUuid(),
 							title: 'final',
@@ -76,23 +95,25 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				...seasson,
 				isCurrent: false,
 			}));
-			localStorage.setItem('seassons', JSON.stringify([...oldSeassons, newSeason]));
+			localStorage.setItem('seasons', JSON.stringify([...oldSeassons, newSeason]));
 			const seasons = [...oldSeassons, newSeason];
 			return { ...state, seasons };
 		}
 		case '[SEASSON-REGULAR] - ADD MATCH SCORE': {
 			const { uuid, matches } = action.payload as { uuid: string; matches: TJourney };
 			const season = state.seasons.find(s => s.uuid === uuid) as TSeason;
+			const matchesDone = matches.value.map(match => getRandomScore(match));
 			const matchesWithScore: TJourney = {
 				jid: matches.jid,
-				value: matches.value.map(match => getRandomScore(match)),
+				status: matchesDone.some(match => match.status === 'TODO') ? 'TODO' : 'DONE',
+				value: matchesDone,
 			};
 			const tableOrded = orderTable(season.table, matchesWithScore);
 			const currentJourney = season.fase.regular.currentJourney;
 			const updatedJourneys = season.fase.regular.matches.matches.map(jry => {
 				return jry.jid === matchesWithScore.jid ? matchesWithScore : jry;
 			});
-
+			const isFinished = updatedJourneys.some(jourey => jourey.status === 'TODO');
 			const seasonUpdated: TSeason = {
 				...season,
 				table: tableOrded,
@@ -100,7 +121,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					...season.fase,
 					regular: {
 						...season.fase.regular,
-						currentJourney: currentJourney + 1,
+						currentJourney: isFinished ? currentJourney + 1 : currentJourney,
+						status: isFinished ? 'ACTIVE' : 'FINISHED',
 						matches: {
 							...season.fase.regular.matches,
 							matches: updatedJourneys,
@@ -109,12 +131,124 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				},
 			};
 
-			const seasonsUpdated = state.seasons.map(sn =>
-				sn.uuid === seasonUpdated.uuid ? seasonUpdated : sn,
-			);
 			return {
 				...state,
-				seasons: seasonsUpdated,
+				seasons: setSeasons(seasonUpdated, state.seasons),
+			};
+		}
+		case '[SEASSON] - UPDATED STATUS FASE': {
+			const { sid, type, status } = action.payload as TBlockedFase;
+
+			const season = state.seasons.find(season => season.uuid === sid) as TSeason;
+
+			const fase = { ...season.fase[type], status };
+
+			const updatedFases = { ...season.fase, [type]: fase };
+
+			const updatedSeason = { ...season, fase: updatedFases };
+
+			return {
+				...state,
+				seasons: setSeasons(updatedSeason, state.seasons),
+			};
+		}
+		case '[SEASSON-SEMIFINALS] - SET MATCHES': {
+			const sid = action.payload;
+			const season = state.seasons.find(season => season.uuid === sid) as TSeason;
+			const semifinals: TJourney = {
+				jid: getUuid(),
+				status: 'TODO',
+				value: [
+					{
+						uuid: getUuid(),
+						status: 'TODO',
+						local: {
+							...season.table[0].club,
+							score: 0,
+						},
+						visit: {
+							...season.table[3].club,
+							score: 0,
+						},
+					},
+					{
+						uuid: getUuid(),
+						status: 'TODO',
+						local: {
+							...season.table[1].club,
+							score: 0,
+						},
+						visit: {
+							...season.table[2].club,
+							score: 0,
+						},
+					},
+				],
+			};
+
+			const fase: TFase = {
+				...season.fase.semifinal,
+				status: 'ACTIVE',
+				matches: {
+					uuid: getUuid(),
+					title: 'Semifinal',
+					matches: [semifinals],
+				},
+			};
+			const updatedSeason: TSeason = {
+				...season,
+				fase: {
+					...season.fase,
+					semifinal: fase,
+				},
+			};
+
+			return {
+				...state,
+				seasons: setSeasons(updatedSeason, state.seasons),
+			};
+		}
+		case '[SEASSON-SEMIFINALS] - ADD MATCH SCORE': {
+			const { uuid, matches } = action.payload as { uuid: string; matches: TJourney };
+			const season = state.seasons.find(s => s.uuid === uuid) as TSeason;
+			const matchesDone = matches.value.map(match => {
+				let matchWithScore: TMatches;
+				do {
+					matchWithScore = getRandomScore(match);
+				} while (matchWithScore.local.score === matchWithScore.visit.score);
+
+				return matchWithScore;
+			});
+			const matchesWithScore: TJourney = {
+				jid: matches.jid,
+				status: matchesDone.some(match => match.status === 'TODO') ? 'TODO' : 'DONE',
+				value: matchesDone,
+			};
+			const currentJourney = season.fase.semifinal.currentJourney;
+			const updatedJourneys = season.fase.semifinal.matches.matches.map(jry => {
+				return jry.jid === matchesWithScore.jid ? matchesWithScore : jry;
+			});
+			const isFinished = !updatedJourneys.some(jourey => jourey.status === 'TODO');
+			const winners = matchesWithScore.value.map(match => getWinner(match).winner);
+			const seasonUpdated: TSeason = {
+				...season,
+				fase: {
+					...season.fase,
+					semifinal: {
+						...season.fase.semifinal,
+						currentJourney: isFinished ? currentJourney + 1 : currentJourney,
+						status: !isFinished ? 'ACTIVE' : 'FINISHED',
+						winners,
+						matches: {
+							...season.fase.regular.matches,
+							matches: updatedJourneys,
+						},
+					},
+				},
+			};
+			return {
+				...state,
+				seasons: setSeasons(seasonUpdated, state.seasons),
 			};
 		}
 
