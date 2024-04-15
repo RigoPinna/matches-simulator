@@ -1,0 +1,33 @@
+.container_table {
+	width: 100%;
+	position: sticky;
+	top: 65px;
+	z-index: 2;
+	background: rgba(23, 23, 23, 0.1);
+	backdrop-filter: blur(33.5px);
+}
+.wrapper_table {
+	width: 100%;
+	margin: 0 auto;
+	max-width: 446px;
+	padding: 16px;
+}
+.status_container h2,
+.status_container p {
+	text-align: center;
+	font-weight: 400;
+}
+.status_container p {
+	margin-top: 12px;
+	color: var(--grey-400);
+}
+.button {
+	width: 100%;
+	max-width: 366px;
+	margin: 16px auto 0;
+	justify-content: center;
+	padding: 14px 14px;
+	border-radius: 14px;
+	font-size: 17px;
+	font-weight: 600;
+}

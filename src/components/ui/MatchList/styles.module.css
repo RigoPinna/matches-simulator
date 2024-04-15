@@ -1,0 +1,59 @@
+.container {
+	padding: 33px 0;
+	opacity: 0.5;
+}
+.current_matches {
+	opacity: 1;
+}
+.header {
+	display: flex;
+	width: 100%;
+	height: fit-content;
+	flex-flow: row nowrap;
+	gap: 12px;
+	padding-bottom: 16px;
+}
+.header h3 {
+	font-size: 18px;
+	font-weight: bold;
+	color: #fff;
+}
+.matches_list {
+	list-style: none;
+	color: #fff;
+	font-size: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+.club {
+	gap: 4px;
+	width: fit-content;
+}
+.match {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	gap: 30px;
+	align-items: center;
+	padding-left: 20px;
+	position: relative;
+}
+.match_player {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+}
+.match_score {
+	font-size: 14px;
+	font-weight: bold;
+	width: 32px;
+	text-align: center;
+}
+.btn_simulate {
+	display: none;
+}
+.current_matches .btn_simulate {
+	display: flex;
+}

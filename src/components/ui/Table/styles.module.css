@@ -1,0 +1,40 @@
+.table {
+	width: 380px;
+}
+.table_head th {
+	color: var(--grey-100);
+	font-size: 12px;
+}
+.table_head_club {
+	width: 150px;
+	text-align: left;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.table_head_club,
+.table_pts {
+	color: var(--grey-400) !important;
+	font-weight: bold !important;
+}
+.body {
+	padding: 5px 10px;
+}
+.body tr td {
+	padding: 5px 10px;
+	border-left: 3px solid transparent;
+	font-size: 12px;
+	font-weight: normal;
+	color: var(--grey-100);
+}
+.body tr:nth-child(-n + 4) .table_head_club {
+	border-left: 3px solid #164778;
+}
+.table_socre_item {
+	border-bottom: 1px solid var(--dark-500);
+}
+.table_head_club_item p {
+	color: var(--grey-400) !important;
+	font-size: 12px;
+	font-weight: 400;
+}
