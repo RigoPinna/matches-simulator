@@ -52,7 +52,7 @@ export type TSeason = {
 	fase: {
 		regular: TFase;
 		semifinal: TFase & { winners?: ITeamMatch[] };
-		final: TFase;
+		final: TFase & { winners?: ITeamMatch[] };
 	};
 	matches?: TMatch[];
 	table: IItemTable[];
