@@ -31,3 +31,11 @@
 	font-size: 17px;
 	font-weight: 600;
 }
+.champion_container {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+.champion_container img {
+	margin-top: 12px;
+}
