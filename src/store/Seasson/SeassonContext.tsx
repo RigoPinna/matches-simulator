@@ -10,6 +10,7 @@ export interface IClub {
 	uuid: string;
 	image: string;
 	name: string;
+	color: string;
 }
 
 export interface IItemTable {
@@ -52,7 +53,7 @@ export type TSeason = {
 	fase: {
 		regular: TFase;
 		semifinal: TFase & { winners?: ITeamMatch[] };
-		final: TFase;
+		final: TFase & { winners?: ITeamMatch[] };
 	};
 	matches?: TMatch[];
 	table: IItemTable[];
@@ -65,31 +66,37 @@ const clubs: IClub[] = [
 		uuid: '1',
 		name: 'América',
 		image: america,
+		color: '#FFEB00',
 	},
 	{
 		uuid: '2',
 		name: 'Chivas',
 		image: chivas,
+		color: '#E22844',
 	},
 	{
 		uuid: '3',
 		name: 'Cruz Azul',
 		image: cruz_azul,
+		color: '#2E9FC2',
 	},
 	{
 		uuid: '4',
 		name: 'Monterrey',
 		image: monterrey,
+		color: '#1E3C67',
 	},
 	{
 		uuid: '5',
 		name: 'Santos',
 		image: santos,
+		color: '#10C868',
 	},
 	{
 		uuid: '6',
 		name: 'Tigres',
 		image: tigres,
+		color: '#FFC200',
 	},
 ];
 export type TState = {
