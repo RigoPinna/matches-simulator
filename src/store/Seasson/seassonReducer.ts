@@ -81,7 +81,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				table: state.clubs.map(
 					club =>
 						({
-							club,
+							club: { ...club },
 							ga: 0,
 							gd: 0,
 							gf: 0,
@@ -118,7 +118,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const isFinished = updatedJourneys.some(jourey => jourey.status === 'TODO');
 			const seasonUpdated: TSeason = {
 				...season,
-				table: tableOrded,
+				table: [...tableOrded],
 				fase: {
 					...season.fase,
 					regular: {
@@ -284,7 +284,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				],
 			};
 			const fase: TFase = {
-				...season.fase.semifinal,
+				...season.fase.final,
 				status: 'ACTIVE',
 				matches: {
 					uuid: getUuid(),
