@@ -1,18 +1,18 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import styles from './styles.module.css';
-import { SeassonContext } from '../../store';
+// import { SeassonContext } from '../../store';
 import confetti from 'canvas-confetti';
 import { useCurrentSeasonParams } from '../../hooks';
 import { Button, MatchList } from '../../components/ui';
 export const Final = () => {
-	const { dispatch } = useContext(SeassonContext);
+	// const { dispatch } = useContext(SeassonContext);
 	const season = useCurrentSeasonParams();
 	const final = season?.fase.final;
 	const winner = final?.winners && final?.winners[0];
 	useEffect(() => {
 		if (final?.status === 'FINISHED') {
 			const end = Date.now() + 4.5 * 1000;
-			const colors = [winner?.color, '#ffffff'];
+			const colors = [winner?.color || '#D4AF37', '#ffffff'];
 
 			(function frame() {
 				confetti({
