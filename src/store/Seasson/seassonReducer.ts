@@ -1,5 +1,6 @@
 import { v4 as getUuid } from 'uuid';
 import {
+	IClub,
 	IItemTable,
 	TFase,
 	TJourney,
@@ -22,6 +23,7 @@ export type TType =
 	| '[SEASSON-SEMIFINALS] - ADD MATCH SCORE'
 	| '[SEASSON-FINAL] - SET MATCHES'
 	| '[SEASSON-FINAL] - ADD MATCH SCORE'
+	| '[SEASSON] - FINISHED SEASON'
 	| '[SEASSON] - ORDER TABLE';
 
 export type TAction = {
@@ -38,8 +40,11 @@ export type TSeasonReducer = (state: TState, action: TAction) => TState;
 export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 	switch (action.type) {
 		case '[SEASSON] - SET SEASSONS': {
+			const clubsSaved = localStorage.getItem('clubs');
+			const clubs = clubsSaved ? JSON.parse(clubsSaved) : state.clubs;
 			return {
 				...state,
+				clubs,
 				seasons: action.payload,
 			};
 		}
@@ -339,6 +344,27 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			return {
 				...state,
 				seasons: setSeasons(seasonUpdated, state.seasons),
+			};
+		}
+		case '[SEASSON] - FINISHED SEASON': {
+			const { sid, winner } = action.payload as { sid: string; winner: IClub };
+			const season = state.seasons.find(s => s.uuid === sid) as TSeason;
+			const clubs = state.clubs.map(item => {
+				return item.uuid === winner.uuid
+					? { ...winner, champions: item?.champions ? item.champions + 1 : 1 }
+					: item;
+			});
+			localStorage.setItem('clubs', JSON.stringify(clubs));
+			return {
+				...state,
+				clubs,
+				seasons: setSeasons(
+					{
+						...season,
+						isCurrent: false,
+					},
+					state.seasons,
+				),
 			};
 		}
 		default:
