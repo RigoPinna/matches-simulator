@@ -1,13 +1,13 @@
-import { Main } from '../../components/layouts';
-import { Button, Header } from '../../components/ui';
-import { Table } from '../../components/ui/Table';
-import { ArrowLeft } from '../../components/icons';
-import styles from './styles.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useCurrentSeasonParams } from '../../hooks';
+import { Main } from '../../components/layouts';
+import { Button, Header, Table } from '../../components/ui';
+import { ArrowLeft } from '../../components/icons';
 import { StatusJourney } from './StatusJournay';
 import { StatusSemifinals } from './StatusSemifinals';
 import { Final } from './Final';
+import styles from './styles.module.css';
+import { Finished } from './Finished';
 
 export const SeasonPage = () => {
 	const navigate = useNavigate();
@@ -34,6 +34,7 @@ export const SeasonPage = () => {
 				<StatusJourney />
 				<StatusSemifinals />
 				<Final />
+				<Finished />
 			</Main>
 		</>
 	);

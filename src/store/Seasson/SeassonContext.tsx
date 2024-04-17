@@ -11,6 +11,7 @@ export interface IClub {
 	image: string;
 	name: string;
 	color: string;
+	champions?: number;
 }
 
 export interface IItemTable {
@@ -67,36 +68,42 @@ const clubs: IClub[] = [
 		name: 'América',
 		image: america,
 		color: '#FFEB00',
+		champions: 0,
 	},
 	{
 		uuid: '2',
 		name: 'Chivas',
 		image: chivas,
 		color: '#E22844',
+		champions: 0,
 	},
 	{
 		uuid: '3',
 		name: 'Cruz Azul',
 		image: cruz_azul,
 		color: '#2E9FC2',
+		champions: 0,
 	},
 	{
 		uuid: '4',
 		name: 'Monterrey',
 		image: monterrey,
 		color: '#1E3C67',
+		champions: 0,
 	},
 	{
 		uuid: '5',
 		name: 'Santos',
 		image: santos,
 		color: '#10C868',
+		champions: 0,
 	},
 	{
 		uuid: '6',
 		name: 'Tigres',
 		image: tigres,
 		color: '#FFC200',
+		champions: 0,
 	},
 ];
 export type TState = {
