@@ -97,6 +97,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 							pts: 0,
 						}) as IItemTable,
 				),
+				winner: null,
 			};
 			const oldSeassons = state.seasons.map(seasson => ({
 				...seasson,
@@ -358,10 +359,12 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			return {
 				...state,
 				clubs,
+
 				seasons: setSeasons(
 					{
 						...season,
 						isCurrent: false,
+						winner: season.fase.final?.winners ? season.fase.final.winners[0] : null,
 					},
 					state.seasons,
 				),

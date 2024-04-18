@@ -58,7 +58,7 @@ export type TSeason = {
 	};
 	matches?: TMatch[];
 	table: IItemTable[];
-	winder?: string;
+	winner: ITeamMatch | null;
 };
 
 const seasons: TSeason[] = [];
