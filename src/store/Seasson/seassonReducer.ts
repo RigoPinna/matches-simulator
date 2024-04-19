@@ -10,7 +10,7 @@ import {
 	TStatusFase,
 	globalState,
 } from './SeassonContext';
-import { getJourneys, getWinner, orderTable, setSeasons } from '../../helpers';
+import { getJourneys, getWinner, isMyClub, orderTable, setSeasons } from '../../helpers';
 import { getRandomScore } from '../../helpers/getRandomScore';
 
 export type TType =
@@ -109,18 +109,21 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 		case '[SEASSON-REGULAR] - ADD MATCH SCORE': {
 			const { uuid, matches } = action.payload as { uuid: string; matches: TJourney };
 			const season = state.seasons.find(s => s.uuid === uuid) as TSeason;
-			const matchesDone = matches.value.map(match => getRandomScore(match));
+
+			const matchesDone = matches.value.map(match => {
+				return isMyClub(match, state.myClub as IClub) ? match : getRandomScore(match);
+			});
 			const matchesWithScore: TJourney = {
 				jid: matches.jid,
 				status: matchesDone.some(match => match.status === 'TODO') ? 'TODO' : 'DONE',
 				value: matchesDone,
 			};
-			const tableOrded = orderTable(season.table, matchesWithScore);
+			const tableOrded = orderTable(state.myClub as IClub, season.table, matchesWithScore);
 			const currentJourney = season.fase.regular.currentJourney;
 			const updatedJourneys = season.fase.regular.matches.matches.map(jry => {
 				return jry.jid === matchesWithScore.jid ? matchesWithScore : jry;
 			});
-			const isFinished = updatedJourneys.some(jourey => jourey.status === 'TODO');
+
 			const seasonUpdated: TSeason = {
 				...season,
 				table: [...tableOrded],
@@ -128,8 +131,9 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					...season.fase,
 					regular: {
 						...season.fase.regular,
-						currentJourney: isFinished ? currentJourney + 1 : currentJourney,
-						status: isFinished ? 'ACTIVE' : 'FINISHED',
+						currentJourney:
+							matchesWithScore.status === 'DONE' ? currentJourney + 1 : currentJourney,
+						status: matchesWithScore.status === 'TODO' ? 'ACTIVE' : 'FINISHED',
 						matches: {
 							...season.fase.regular.matches,
 							matches: updatedJourneys,

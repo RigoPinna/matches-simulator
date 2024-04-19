@@ -1,5 +1,6 @@
-import { IItemTable, ITeamMatch, TJourney } from '../store';
+import { IClub, IItemTable, ITeamMatch, TJourney } from '../store';
 import { TWinner, getWinner } from './getWinner';
+import { isMyClub } from './isMyClub';
 
 const updateWinner = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
@@ -98,17 +99,19 @@ const updateClubs = ({ type, winner, loser }: TWinner, table: IItemTable[]): IIt
  * @returns The function `orderTable` is returning a sorted array of `IItemTable` objects based on the
  * points (`pts`) and goal difference (`gd`) properties of each object.
  */
-export const orderTable = (table: IItemTable[], journey: TJourney) => {
+export const orderTable = (myClub: IClub, table: IItemTable[], journey: TJourney) => {
 	const matches = journey.value;
 	let newTable = [...table];
 	for (const match of matches) {
-		const result = getWinner(match);
-		const clubs = updateClubs(result, newTable);
+		if (!isMyClub(match, myClub)) {
+			const result = getWinner(match);
+			const clubs = updateClubs(result, newTable);
 
-		newTable = newTable.map(current => {
-			const club = clubs.find(item => item.club.uuid === current.club.uuid);
-			return club || current;
-		});
+			newTable = newTable.map(current => {
+				const club = clubs.find(item => item.club.uuid === current.club.uuid);
+				return club || current;
+			});
+		}
 	}
 	return newTable.sort((a, b) => {
 		// Ordenar por pts de mayor a menor
