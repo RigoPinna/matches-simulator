@@ -72,7 +72,7 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 			</div>
 			<ul className={styles.matches_list}>
 				{matches.value.map(match => (
-					<ItemMatch key={match.uuid} {...match} />
+					<ItemMatch key={match.uuid} {...match} type={type} />
 				))}
 			</ul>
 		</div>
