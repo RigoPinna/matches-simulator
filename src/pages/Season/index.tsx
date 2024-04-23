@@ -16,7 +16,6 @@ export const SeasonPage = () => {
 	if (typeof season === 'undefined') {
 		return <></>;
 	}
-
 	return (
 		<>
 			<Header>

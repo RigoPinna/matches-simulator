@@ -10,7 +10,14 @@ import {
 	TStatusFase,
 	globalState,
 } from './SeassonContext';
-import { getJourneys, getWinner, isMyClub, orderTable, setSeasons } from '../../helpers';
+import {
+	getJourneys,
+	getWinner,
+	isMyClub,
+	orderMyTeam,
+	orderTable,
+	setSeasons,
+} from '../../helpers';
 import { getRandomScore } from '../../helpers/getRandomScore';
 
 export type TType =
@@ -24,7 +31,8 @@ export type TType =
 	| '[SEASSON-FINAL] - SET MATCHES'
 	| '[SEASSON-FINAL] - ADD MATCH SCORE'
 	| '[SEASSON] - FINISHED SEASON'
-	| '[SEASSON] - ORDER TABLE';
+	| '[SEASSON] - ORDER TABLE'
+	| '[SEASSON] - ADDED MY SCORE';
 
 export type TAction = {
 	type: TType;
@@ -34,6 +42,12 @@ export type TBlockedFase = {
 	sid: string;
 	type: 'regular' | 'semifinal' | 'final';
 	status: TStatusFase;
+};
+export type TAddMyScore = {
+	sid: string;
+	jid: string;
+	type: 'regular' | 'semifinal' | 'final';
+	match: TMatches;
 };
 export type TSeasonReducer = (state: TState, action: TAction) => TState;
 
@@ -133,7 +147,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 						...season.fase.regular,
 						currentJourney:
 							matchesWithScore.status === 'DONE' ? currentJourney + 1 : currentJourney,
-						status: matchesWithScore.status === 'TODO' ? 'ACTIVE' : 'FINISHED',
+						status: updatedJourneys.some(j => j.status === 'TODO') ? 'ACTIVE' : 'FINISHED',
 						matches: {
 							...season.fase.regular.matches,
 							matches: updatedJourneys,
@@ -366,6 +380,59 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					{
 						...season,
 						isCurrent: false,
+					},
+					state.seasons,
+				),
+			};
+		}
+		case '[SEASSON] - ADDED MY SCORE': {
+			const { match: myMatch, sid, jid, type } = action.payload as TAddMyScore;
+			const season = state.seasons.find(s => s.uuid === sid) as TSeason;
+			const fase = season.fase[type];
+			const journey = fase.matches.matches.find(journey => journey.jid === jid);
+			const matches = journey?.value.map(match => (match.uuid === myMatch.uuid ? myMatch : match));
+			const isDone = !matches?.some(match => match.status === 'TODO');
+			console.log(
+				matches,
+				!matches?.some(match => match.status === 'TODO'),
+				isDone ? fase.currentJourney + 1 : fase.currentJourney,
+				fase.currentJourney,
+			);
+
+			const newTable =
+				type === 'regular'
+					? orderMyTeam(state.myClub as IClub, season.table, {
+							...journey,
+							value: matches,
+						} as TJourney)
+					: season.table;
+			const journeys = fase.matches.matches.map(journey =>
+				journey.jid === jid
+					? {
+							...journey,
+							status: isDone ? 'DONE' : 'TODO',
+							value: matches,
+						}
+					: journey,
+			);
+			return {
+				...state,
+				seasons: setSeasons(
+					{
+						...season,
+						table: [...newTable],
+						fase: {
+							...season.fase,
+							[type]: {
+								...fase,
+								status: journeys.some(item => item.status === 'TODO') ? 'ACTIVE' : 'FINISHED',
+								currentJourney: isDone ? fase.currentJourney + 1 : fase.currentJourney,
+								matches: {
+									...fase.matches,
+									matches: journeys,
+								},
+							} as TFase,
+						},
 					},
 					state.seasons,
 				),

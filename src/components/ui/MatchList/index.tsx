@@ -41,12 +41,15 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 		const myMatch = matches.value.find(
 			match => match.local.uuid === myClub?.uuid || match.visit.uuid === myClub?.uuid,
 		);
+		if (typeof myMatch === 'undefined') {
+			return matches.value.some(match => match.status === 'TODO');
+		}
 		if (myMatch?.status === 'DONE') {
 			return matches.status === 'TODO';
 		}
-
 		if (myMatch?.status === 'TODO') {
-			return !matches.value.some(match => match.status === 'DONE');
+			const olthersMatches = matches.value.filter(item => item.uuid !== myMatch.uuid);
+			return olthersMatches.some(match => match.status === 'TODO');
 		}
 	}
 	return (
@@ -72,7 +75,7 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 			</div>
 			<ul className={styles.matches_list}>
 				{matches.value.map(match => (
-					<ItemMatch key={match.uuid} {...match} type={type} />
+					<ItemMatch key={match.uuid} {...match} type={type} jid={matches.jid} />
 				))}
 			</ul>
 		</div>

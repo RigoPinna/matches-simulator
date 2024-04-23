@@ -126,3 +126,31 @@ export const orderTable = (myClub: IClub, table: IItemTable[], journey: TJourney
 		return b.gf - a.gf;
 	});
 };
+export const orderMyTeam = (myClub: IClub, table: IItemTable[], journey: TJourney) => {
+	const matches = journey.value;
+	let newTable = [...table];
+	for (const match of matches) {
+		if (typeof match.local.score === 'number' && typeof match.visit.score === 'number')
+			if (isMyClub(match, myClub)) {
+				const result = getWinner(match);
+				const clubs = updateClubs(result, newTable);
+
+				newTable = newTable.map(current => {
+					const club = clubs.find(item => item.club.uuid === current.club.uuid);
+					return club || current;
+				});
+			}
+	}
+	return newTable.sort((a, b) => {
+		// Ordenar por pts de mayor a menor
+		if (a.pts !== b.pts) {
+			return b.pts - a.pts;
+		}
+		// Si los pts son iguales, ordenar por gd de mayor a menor
+		if (a.gd !== b.gd) {
+			return b.gd - a.gd;
+		}
+		// Si los gd son iguales, ordenar por gf de mayor a menor
+		return b.gf - a.gf;
+	});
+};
