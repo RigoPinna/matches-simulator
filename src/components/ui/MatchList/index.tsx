@@ -4,8 +4,8 @@ import styles from './styles.module.css';
 import { SeassonContext, TJourney } from '../../../store';
 import { ItemMatch } from './ItemMatch';
 import { useContext, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { TType } from '../../../store/Seasson/seassonReducer';
+import { useCurrentSeasonParams } from '../../../hooks';
 
 interface IMatchList {
 	title: string;
@@ -20,8 +20,8 @@ const TYPE_ACTION = {
 };
 Object.freeze(TYPE_ACTION);
 export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
-	const { dispatch } = useContext(SeassonContext);
-	const { sid } = useParams();
+	const { myClub, dispatch } = useContext(SeassonContext);
+	const season = useCurrentSeasonParams();
 	const [isLoading, setIsLoading] = useState(false);
 	const simulateMatches = () => {
 		setIsLoading(true);
@@ -29,7 +29,7 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 			dispatch({
 				type: TYPE_ACTION[type] as TType,
 				payload: {
-					uuid: sid,
+					uuid: season?.uuid,
 					matches,
 				},
 			});
@@ -37,6 +37,21 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 			clearTimeout(id);
 		}, 900);
 	};
+	function showButton() {
+		const myMatch = matches.value.find(
+			match => match.local.uuid === myClub?.uuid || match.visit.uuid === myClub?.uuid,
+		);
+		if (typeof myMatch === 'undefined') {
+			return matches.value.some(match => match.status === 'TODO');
+		}
+		if (myMatch?.status === 'DONE') {
+			return matches.status === 'TODO';
+		}
+		if (myMatch?.status === 'TODO') {
+			const olthersMatches = matches.value.filter(item => item.uuid !== myMatch.uuid);
+			return olthersMatches.some(match => match.status === 'TODO');
+		}
+	}
 	return (
 		<div className={`${styles.container} ${styles.current_matches}`}>
 			<div className={styles.header}>
@@ -44,10 +59,14 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 				{isCurrent && (
 					<>
 						{!isLoading ? (
-							<Button.Primary onClick={simulateMatches} className={styles.btn_simulate}>
-								<Fire />
-								Simulate
-							</Button.Primary>
+							<>
+								{showButton() && (
+									<Button.Primary onClick={simulateMatches} className={styles.btn_simulate}>
+										<Fire />
+										Simulate
+									</Button.Primary>
+								)}
+							</>
 						) : (
 							<Loader />
 						)}
@@ -56,7 +75,7 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 			</div>
 			<ul className={styles.matches_list}>
 				{matches.value.map(match => (
-					<ItemMatch key={match.uuid} {...match} />
+					<ItemMatch key={match.uuid} {...match} type={type} jid={matches.jid} />
 				))}
 			</ul>
 		</div>

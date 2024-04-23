@@ -16,7 +16,9 @@ const Primary = ({ children, onClick, className = '' }: IButton) => {
 
 const Secondary = ({ children, onClick, className }: IButton) => {
 	return (
-		<button className={`${styles.button} ${styles.secondary} ${className}`} onClick={onClick}>
+		<button
+			className={`${styles.button} ${styles.secondary} ${className}`}
+			onClick={evt => onClick(evt)}>
 			{children}
 		</button>
 	);
