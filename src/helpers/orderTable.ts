@@ -4,8 +4,8 @@ import { isMyClub } from './isMyClub';
 
 const updateWinner = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
-	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + visitor.score;
+	const wgf = club.score ? currentClub.gf + club.score : currentClub.gf;
+	const wga = visitor.score ? currentClub.ga + visitor.score : currentClub.ga;
 	return {
 		club: {
 			image: club.image,
@@ -25,8 +25,8 @@ const updateWinner = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]
 };
 const updateLoser = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
-	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + visitor.score;
+	const wgf = club.score ? currentClub.gf + club.score : currentClub.gf;
+	const wga = visitor.score ? currentClub.ga + visitor.score : currentClub.ga;
 	return {
 		club: {
 			image: club.image,
@@ -46,8 +46,8 @@ const updateLoser = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[])
 };
 const updateDraw = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
-	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + visitor.score;
+	const wgf = club.score ? currentClub.gf + club.score : currentClub.gf;
+	const wga = visitor.score ? currentClub.ga + visitor.score : currentClub.ga;
 	return {
 		club: {
 			image: club.image,
@@ -65,7 +65,6 @@ const updateDraw = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]):
 		gd: wgf - wga,
 	};
 };
-
 const updateClubs = ({ type, winner, loser }: TWinner, table: IItemTable[]): IItemTable[] => {
 	switch (type) {
 		case 'LOCAL': {
@@ -130,8 +129,8 @@ export const orderMyTeam = (myClub: IClub, table: IItemTable[], journey: TJourne
 	const matches = journey.value;
 	let newTable = [...table];
 	for (const match of matches) {
-		if (typeof match.local.score === 'number' && typeof match.visit.score === 'number')
-			if (isMyClub(match, myClub)) {
+		if (typeof match.local.score === 'number' && typeof match.visit.score === 'number') {
+			if (isMyClub(match, myClub) && match.status === 'TODO') {
 				const result = getWinner(match);
 				const clubs = updateClubs(result, newTable);
 
@@ -140,6 +139,7 @@ export const orderMyTeam = (myClub: IClub, table: IItemTable[], journey: TJourne
 					return club || current;
 				});
 			}
+		}
 	}
 	return newTable.sort((a, b) => {
 		// Ordenar por pts de mayor a menor

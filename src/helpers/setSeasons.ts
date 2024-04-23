@@ -5,7 +5,7 @@ export const setSeasons = (currentSeason: TSeason, seasons: TSeason[]) => {
 		season.uuid === currentSeason.uuid ? currentSeason : season,
 	);
 
-	// localStorage.setItem('seasons', JSON.stringify(newSeasons));
+	localStorage.setItem('seasons', JSON.stringify(newSeasons));
 
 	return newSeasons;
 };

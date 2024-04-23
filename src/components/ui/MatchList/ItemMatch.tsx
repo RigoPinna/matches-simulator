@@ -36,7 +36,7 @@ export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch)
 				jid,
 				match: {
 					uuid,
-					status: 'DONE',
+					status: 'TODO',
 					local: {
 						...local,
 						score: form.local || 0,

@@ -236,26 +236,19 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 		}
 		case '[SEASSON-SEMIFINALS] - ADD MATCH SCORE': {
 			const { uuid, matches } = action.payload as { uuid: string; matches: TJourney };
-			const season = state.seasons.find(s => s.uuid === uuid) as TSeason;
-			const matchesDone = matches.value.map(match => {
-				let matchWithScore: TMatches;
-				do {
-					matchWithScore = getRandomScore(match);
-				} while (matchWithScore.local.score === matchWithScore.visit.score);
-
-				return matchWithScore;
+			const {
+				season,
+				isFinished,
+				currentJourney,
+				matches: matchesUpdated,
+				winners,
+			} = updateMatchesNoDraw({
+				type: 'semifinal',
+				uuid,
+				matches,
+				seasons: state.seasons,
+				myClub: state.myClub as IClub,
 			});
-			const matchesWithScore: TJourney = {
-				jid: matches.jid,
-				status: matchesDone.some(match => match.status === 'TODO') ? 'TODO' : 'DONE',
-				value: matchesDone,
-			};
-			const currentJourney = season.fase.semifinal.currentJourney;
-			const updatedJourneys = season.fase.semifinal.matches.matches.map(jry => {
-				return jry.jid === matchesWithScore.jid ? matchesWithScore : jry;
-			});
-			const isFinished = !updatedJourneys.some(jourey => jourey.status === 'TODO');
-			const winners = matchesWithScore.value.map(match => getWinner(match).winner);
 			const seasonUpdated: TSeason = {
 				...season,
 				fase: {
@@ -266,12 +259,13 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 						status: !isFinished ? 'ACTIVE' : 'FINISHED',
 						winners,
 						matches: {
-							...season.fase.regular.matches,
-							matches: updatedJourneys,
+							...season.fase.semifinal.matches,
+							matches: matchesUpdated,
 						},
 					},
 				},
 			};
+
 			return {
 				...state,
 				seasons: setSeasons(seasonUpdated, state.seasons),
@@ -342,6 +336,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				uuid,
 				matches,
 				seasons: state.seasons,
+				myClub: state.myClub as IClub,
 			});
 			const seasonUpdated: TSeason = {
 				...season,
@@ -353,7 +348,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 						status: !isFinished ? 'ACTIVE' : 'FINISHED',
 						winners,
 						matches: {
-							...season.fase.regular.matches,
+							...season.fase.final.matches,
 							matches: matchesUpdated,
 						},
 					},
@@ -394,13 +389,10 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const fase = season.fase[type];
 			const journey = fase.matches.matches.find(journey => journey.jid === jid);
 			const matches = journey?.value.map(match => (match.uuid === myMatch.uuid ? myMatch : match));
-			const isDone = !matches?.some(match => match.status === 'TODO');
-			console.log(
-				matches,
-				!matches?.some(match => match.status === 'TODO'),
-				isDone ? fase.currentJourney + 1 : fase.currentJourney,
-				fase.currentJourney,
+			const matchesDone: TMatches[] | undefined = matches?.map(match =>
+				match.uuid === myMatch.uuid ? { ...myMatch, status: 'DONE' } : match,
 			);
+			const isDone = !matchesDone?.some(match => match.status === 'TODO');
 
 			const newTable =
 				type === 'regular'
@@ -414,10 +406,16 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					? {
 							...journey,
 							status: isDone ? 'DONE' : 'TODO',
-							value: matches,
+							value: matchesDone,
 						}
 					: journey,
 			);
+			let winners;
+			if (type === 'semifinal' || type === 'final') {
+				if (isDone && matchesDone) {
+					winners = matchesDone.map(match => getWinner(match).winner);
+				}
+			}
 			return {
 				...state,
 				seasons: setSeasons(
@@ -426,8 +424,12 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 						table: [...newTable],
 						fase: {
 							...season.fase,
+
 							[type]: {
 								...fase,
+								...((type === 'semifinal' || type === 'final') && {
+									winners,
+								}),
 								status: journeys.some(item => item.status === 'TODO') ? 'ACTIVE' : 'FINISHED',
 								currentJourney: isDone ? fase.currentJourney + 1 : fase.currentJourney,
 								matches: {
@@ -446,14 +448,17 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 	}
 };
 
-function getScoreNoDraw(matches: TJourney) {
+function getScoreNoDraw(matches: TJourney, myClub: IClub) {
 	const matchesDone = matches.value.map(match => {
-		let matchWithScore: TMatches;
-		do {
-			matchWithScore = getRandomScore(match);
-		} while (matchWithScore.local.score === matchWithScore.visit.score);
+		if (!isMyClub(match, myClub)) {
+			let matchWithScore: TMatches;
+			do {
+				matchWithScore = getRandomScore(match);
+			} while (matchWithScore.local.score === matchWithScore.visit.score);
 
-		return matchWithScore;
+			return matchWithScore;
+		}
+		return match;
 	});
 
 	return matchesDone;
@@ -463,11 +468,12 @@ type TParams = {
 	uuid: string;
 	matches: TJourney;
 	seasons: TSeason[];
+	myClub: IClub;
 };
 
-function updateMatchesNoDraw({ type, uuid, matches, seasons }: TParams) {
+function updateMatchesNoDraw({ type, uuid, matches, seasons, myClub }: TParams) {
 	const season = seasons.find(s => s.uuid === uuid) as TSeason;
-	const matchesDone = getScoreNoDraw(matches);
+	const matchesDone = getScoreNoDraw(matches, myClub);
 	const matchesWithScore: TJourney = {
 		jid: matches.jid,
 		status: matchesDone.some(match => match.status === 'TODO') ? 'TODO' : 'DONE',
