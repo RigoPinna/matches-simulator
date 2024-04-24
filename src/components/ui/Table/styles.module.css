@@ -1,5 +1,14 @@
 .table {
 	width: 380px;
+	background: rgba(23, 23, 23, 0.1);
+	backdrop-filter: blur(33.5px);
+}
+.table_item_sticky {
+	position: sticky;
+	left: 0;
+	background: rgba(23, 23, 23, 0.8);
+	backdrop-filter: blur(50.5px);
+	z-index: 2;
 }
 .table_head th {
 	color: var(--grey-100);
