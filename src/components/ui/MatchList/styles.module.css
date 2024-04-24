@@ -48,7 +48,7 @@
 .match_score {
 	font-size: 14px;
 	font-weight: bold;
-	width: 32px;
+	width: 50px;
 	text-align: center;
 }
 .btn_simulate {
@@ -56,4 +56,23 @@
 }
 .current_matches .btn_simulate {
 	display: flex;
+}
+.wrapper_input_modal {
+	display: flex;
+	flex-direction: row;
+	gap: 6px;
+	margin-bottom: 16px;
+}
+.club_modal {
+	width: 100px;
+}
+.club_modal > p {
+	color: var(--grey-400);
+	font-size: 12px;
+}
+.modal_btn {
+	width: 34px;
+	height: 34px;
+	border-radius: 100%;
+	margin-left: auto;
 }

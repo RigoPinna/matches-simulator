@@ -19,7 +19,7 @@ interface IItemTable {
 export const ItemTable = (props: IItemTable) => {
 	return (
 		<tr>
-			<td className={styles.table_head_club}>
+			<td className={`${styles.table_head_club} ${styles.table_item_sticky}`}>
 				{props.positions}
 				<ItemClub
 					className={styles.table_head_club_item}

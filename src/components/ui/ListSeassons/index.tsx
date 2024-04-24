@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState, useCallback } from 'react';
-import { List } from '..';
+import { ItemClub, List } from '..';
 import styles from './styles.module.css';
 import { SeassonContext, TSeason } from '../../../store';
 import { useNavigate } from 'react-router-dom';
@@ -30,8 +30,8 @@ export const ListSeassons = () => {
 	};
 	return (
 		<div>
-			<List.Container className={styles.current_seasson} title='Current'>
-				{seassons.current && (
+			{seassons.current && (
+				<List.Container className={styles.current_seasson} title='Current'>
 					<List.Item
 						onClick={() => {
 							seassons.current?.uuid && onGoToSeasson(seassons.current.uuid);
@@ -42,8 +42,8 @@ export const ListSeassons = () => {
 							<h4>Seasson</h4>
 						</div>
 					</List.Item>
-				)}
-			</List.Container>
+				</List.Container>
+			)}
 			<List.Container title='All'>
 				{seassons.all.map(seasson => (
 					<List.Item
@@ -55,7 +55,13 @@ export const ListSeassons = () => {
 						<span className={styles.badge}>{seasson.number}</span>
 						<div className={styles.seasson_info}>
 							<h4>Seasson</h4>
-							{seasson?.winder && <p>{seasson.winder} • 🏆</p>}
+							{seasson.winner ? (
+								<div className={styles.container_message}>
+									<ItemClub {...seasson.winner} className={styles.winner} /> 🏆
+								</div>
+							) : (
+								<p>Current • 🔥</p>
+							)}
 						</div>
 					</List.Item>
 				))}

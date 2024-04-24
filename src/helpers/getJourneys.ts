@@ -17,11 +17,11 @@ const getMatches = (clubs: IClub[]) => {
 				uuid: getUuid(),
 				local: {
 					...clubs[i],
-					score: 0,
+					score: null,
 				},
 				visit: {
 					...clubs[j],
-					score: 0,
+					score: null,
 				},
 				status: 'TODO',
 			});

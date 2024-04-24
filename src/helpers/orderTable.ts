@@ -1,10 +1,11 @@
-import { IItemTable, ITeamMatch, TJourney } from '../store';
+import { IClub, IItemTable, ITeamMatch, TJourney } from '../store';
 import { TWinner, getWinner } from './getWinner';
+import { isMyClub } from './isMyClub';
 
 const updateWinner = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
-	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + visitor.score;
+	const wgf = club.score ? currentClub.gf + club.score : currentClub.gf;
+	const wga = visitor.score ? currentClub.ga + visitor.score : currentClub.ga;
 	return {
 		club: {
 			image: club.image,
@@ -24,8 +25,8 @@ const updateWinner = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]
 };
 const updateLoser = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
-	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + visitor.score;
+	const wgf = club.score ? currentClub.gf + club.score : currentClub.gf;
+	const wga = visitor.score ? currentClub.ga + visitor.score : currentClub.ga;
 	return {
 		club: {
 			image: club.image,
@@ -45,8 +46,8 @@ const updateLoser = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[])
 };
 const updateDraw = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]): IItemTable => {
 	const currentClub = table.find(item => item.club.uuid === club.uuid) as IItemTable;
-	const wgf = currentClub.gf + club.score;
-	const wga = currentClub.ga + visitor.score;
+	const wgf = club.score ? currentClub.gf + club.score : currentClub.gf;
+	const wga = visitor.score ? currentClub.ga + visitor.score : currentClub.ga;
 	return {
 		club: {
 			image: club.image,
@@ -64,7 +65,6 @@ const updateDraw = (club: ITeamMatch, visitor: ITeamMatch, table: IItemTable[]):
 		gd: wgf - wga,
 	};
 };
-
 const updateClubs = ({ type, winner, loser }: TWinner, table: IItemTable[]): IItemTable[] => {
 	switch (type) {
 		case 'LOCAL': {
@@ -98,17 +98,48 @@ const updateClubs = ({ type, winner, loser }: TWinner, table: IItemTable[]): IIt
  * @returns The function `orderTable` is returning a sorted array of `IItemTable` objects based on the
  * points (`pts`) and goal difference (`gd`) properties of each object.
  */
-export const orderTable = (table: IItemTable[], journey: TJourney) => {
+export const orderTable = (myClub: IClub, table: IItemTable[], journey: TJourney) => {
 	const matches = journey.value;
 	let newTable = [...table];
 	for (const match of matches) {
-		const result = getWinner(match);
-		const clubs = updateClubs(result, newTable);
+		if (!isMyClub(match, myClub)) {
+			const result = getWinner(match);
+			const clubs = updateClubs(result, newTable);
 
-		newTable = newTable.map(current => {
-			const club = clubs.find(item => item.club.uuid === current.club.uuid);
-			return club || current;
-		});
+			newTable = newTable.map(current => {
+				const club = clubs.find(item => item.club.uuid === current.club.uuid);
+				return club || current;
+			});
+		}
+	}
+	return newTable.sort((a, b) => {
+		// Ordenar por pts de mayor a menor
+		if (a.pts !== b.pts) {
+			return b.pts - a.pts;
+		}
+		// Si los pts son iguales, ordenar por gd de mayor a menor
+		if (a.gd !== b.gd) {
+			return b.gd - a.gd;
+		}
+		// Si los gd son iguales, ordenar por gf de mayor a menor
+		return b.gf - a.gf;
+	});
+};
+export const orderMyTeam = (myClub: IClub, table: IItemTable[], journey: TJourney) => {
+	const matches = journey.value;
+	let newTable = [...table];
+	for (const match of matches) {
+		if (typeof match.local.score === 'number' && typeof match.visit.score === 'number') {
+			if (isMyClub(match, myClub) && match.status === 'TODO') {
+				const result = getWinner(match);
+				const clubs = updateClubs(result, newTable);
+
+				newTable = newTable.map(current => {
+					const club = clubs.find(item => item.club.uuid === current.club.uuid);
+					return club || current;
+				});
+			}
+		}
 	}
 	return newTable.sort((a, b) => {
 		// Ordenar por pts de mayor a menor

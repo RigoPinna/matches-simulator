@@ -26,7 +26,7 @@ export interface IItemTable {
 	gd: number;
 }
 export interface ITeamMatch extends IClub {
-	score: number;
+	score: number | null;
 }
 export type TStatusMatch = 'TODO' | 'DONE';
 export type TMatches = { uuid: string; local: ITeamMatch; visit: ITeamMatch; status: TStatusMatch };
@@ -58,7 +58,7 @@ export type TSeason = {
 	};
 	matches?: TMatch[];
 	table: IItemTable[];
-	winder?: string;
+	winner: ITeamMatch | null;
 };
 
 const seasons: TSeason[] = [];
