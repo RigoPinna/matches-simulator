@@ -1,15 +1,15 @@
 .container_table {
 	width: 100%;
 	position: sticky;
-	top: 65px;
-	z-index: 2;
+	top: 64px;
+	z-index: 4;
 	background: rgba(23, 23, 23, 0.1);
 	backdrop-filter: blur(33.5px);
 }
 .wrapper_table {
 	width: 100%;
 	margin: 0 auto;
-	max-width: 446px;
+	max-width: 463px;
 	padding: 16px;
 	overflow-x: auto;
 }
@@ -51,4 +51,28 @@
 	bottom: 0;
 	left: 0;
 	z-index: 1;
+}
+.body_finished {
+	position: relative;
+	display: block;
+	min-height: calc(100vh - 333px);
+}
+
+.body_finished > details {
+	position: relative;
+	z-index: 3;
+}
+.icon_ch {
+	display: block;
+	position: absolute;
+	z-index: 2;
+	width: 187px;
+	right: -32px;
+	bottom: -12px;
+	transform: rotate(6.29deg);
+}
+@media only screen and (max-height: 500px) {
+	.wrapper_table {
+		padding: 5px 16px;
+	}
 }
