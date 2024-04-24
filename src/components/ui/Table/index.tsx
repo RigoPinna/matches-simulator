@@ -10,7 +10,7 @@ export const Table = ({ table }: ITable) => {
 		<table className={styles.table}>
 			<thead className={styles.table_head}>
 				<tr>
-					<th className={styles.table_head_club}>Club</th>
+					<th className={`${styles.table_head_club} ${styles.table_item_sticky}`}>Club</th>
 					<th>MG</th>
 					<th>MW</th>
 					<th>MD</th>
