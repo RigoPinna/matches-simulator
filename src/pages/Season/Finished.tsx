@@ -15,7 +15,7 @@ export const Finished = () => {
 		return <></>;
 	}
 	return (
-		<>
+		<div className={styles.body_finished}>
 			<details>
 				<summary>Regular</summary>
 				{season?.fase.regular.matches.matches.map((journey, i) => (
@@ -40,7 +40,7 @@ export const Finished = () => {
 					/>
 				))}
 			</details>
-			<details open>
+			<details className={styles.final_container} open>
 				<summary>Final</summary>
 				{season?.fase.final.matches.matches.map(journey => (
 					<MatchList
@@ -60,6 +60,6 @@ export const Finished = () => {
 					)}
 				</div>
 			</details>
-		</>
+		</div>
 	);
 };
