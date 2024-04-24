@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState, useCallback } from 'react';
-import { ItemClub, List } from '..';
-import styles from './styles.module.css';
-import { SeassonContext, TSeason } from '../../../store';
+import { useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ItemClub, List } from '..';
+import { SeassonContext, TSeason } from '../../../store';
+import styles from './styles.module.css';
 type TStateSeassons = {
 	current: TSeason | undefined;
 	all: TSeason[];
@@ -25,6 +25,10 @@ export const ListSeassons = () => {
 		setSeassons(getFilterSeassons());
 	}, [ctx.seasons]);
 
+	const allSeasons = useMemo(
+		() => seassons.all.sort((a, b) => b.number - a.number),
+		[seassons.all],
+	);
 	const onGoToSeasson = (uuid: string) => {
 		navigate(`/seasson/${uuid}`);
 	};
@@ -44,8 +48,8 @@ export const ListSeassons = () => {
 					</List.Item>
 				</List.Container>
 			)}
-			<List.Container title='All'>
-				{seassons.all.map(seasson => (
+			<List.Container title='All' className={styles.all_seasson}>
+				{allSeasons.map(seasson => (
 					<List.Item
 						key={seasson.uuid}
 						onClick={() => {

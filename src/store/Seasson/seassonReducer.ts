@@ -63,8 +63,9 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			};
 		}
 		case '[SEASSON] - NEW SEASSON': {
+			const uuid = action.payload;
 			const newSeason: TSeason = {
-				uuid: getUuid(),
+				uuid: uuid,
 				number: state.seasons.length + 1,
 				fase: {
 					regular: {

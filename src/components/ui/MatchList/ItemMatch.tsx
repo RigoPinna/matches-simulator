@@ -50,6 +50,7 @@ export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch)
 				type: MATCH_TYPE[type],
 			} as TAddMyScore,
 		});
+		onClose();
 	};
 
 	const handleAddScore = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +73,7 @@ export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch)
 				</p>
 				<ItemClub className={styles.club} image={visit.image} name={visit.name} />
 			</li>
-			<Modal title='title' isOpen={isOpen} onClose={onClose}>
+			<Modal title='Add your score' isOpen={isOpen} onClose={onClose}>
 				<form>
 					<div className={styles.wrapper_input_modal}>
 						<ItemClub className={styles.club_modal} {...local} />

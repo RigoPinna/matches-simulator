@@ -1,21 +1,28 @@
 import { useContext } from 'react';
+import { v4 as getUuid } from 'uuid';
+import { SeassonContext } from '../../store';
 import { Main } from '../../components/layouts';
 import { Header, Button, ListSeassons } from '../../components/ui';
-import { SeassonContext } from '../../store';
-import styles from './styles.module.css';
 import { GameFilled, GameOutlined } from '../../components/icons';
+import styles from './styles.module.css';
+import { useNavigate } from 'react-router-dom';
 export const HomaPage = () => {
 	const { seasons, dispatch } = useContext(SeassonContext);
+	const navigate = useNavigate();
 
 	const handleCreateNewSeason = () => {
+		const uuid = getUuid();
 		dispatch({
 			type: '[SEASSON] - NEW SEASSON',
+			payload: uuid,
 		});
+		navigate(`/seasson/${uuid}`);
 	};
+
 	return (
 		<>
 			<Header className={styles.home_header}>
-				<h1>Seassons</h1>
+				<h1>Seasons</h1>
 				{seasons.length > 0 && (
 					<Button.Primary onClick={handleCreateNewSeason}>
 						<GameFilled />
