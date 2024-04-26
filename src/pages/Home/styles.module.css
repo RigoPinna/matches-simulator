@@ -30,3 +30,31 @@
 	border-radius: 14px;
 	font-size: 16px;
 }
+.badge {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 12px;
+	font-size: 18px;
+	font-weight: bold;
+	background: rgba(255, 194, 0, 0.26);
+	color: #ffc200;
+}
+.winner_item {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+}
+.winner_info h4 {
+	font-size: 18px;
+}
+.winner_info p {
+	font-size: 12px;
+	color: var(--grey-400);
+}
+.winners_btn {
+	margin-bottom: 50px;
+}

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HomaPage, SeasonPage } from '../pages';
 import { useContext, useEffect } from 'react';
 import { SeassonContext } from '../store';
+import { WinnersPage } from '../pages/Winners';
 
 export const MainRouter = () => {
 	const { dispatch } = useContext(SeassonContext);
@@ -18,6 +19,7 @@ export const MainRouter = () => {
 			<Routes>
 				<Route index element={<HomaPage />} />
 				<Route path='seasson/:sid' element={<SeasonPage />} />
+				<Route path='winners' element={<WinnersPage />} />
 			</Routes>
 		</BrowserRouter>
 	);
