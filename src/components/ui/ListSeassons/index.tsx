@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useCallback } from 'react';
+import { useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ItemClub, List } from '..';
 import { SeassonContext, TSeason } from '../../../store';
@@ -21,6 +21,8 @@ export const ListSeassons = () => {
 		};
 	}, [ctx.seasons]);
 
+	const history = useMemo(() => seassons.all.sort((a, b) => a.number - b.number), [seassons.all]);
+
 	useEffect(() => {
 		setSeassons(getFilterSeassons());
 	}, [ctx.seasons]);
@@ -39,13 +41,13 @@ export const ListSeassons = () => {
 						className={styles.seasson_item}>
 						<span className={styles.badge}>{seassons.current.number}</span>
 						<div className={styles.seasson_info}>
-							<h4>Seasson</h4>
+							<h4>Season</h4>
 						</div>
 					</List.Item>
 				</List.Container>
 			)}
 			<List.Container title='History' className={styles.all_seasson}>
-				{seassons.all.map(seasson => (
+				{history.map(seasson => (
 					<List.Item
 						key={seasson.uuid}
 						onClick={() => {
@@ -54,7 +56,7 @@ export const ListSeassons = () => {
 						className={styles.seasson_item}>
 						<span className={styles.badge}>{seasson.number}</span>
 						<div className={styles.seasson_info}>
-							<h4>Seasson</h4>
+							<h4>Season</h4>
 							{seasson.winner ? (
 								<div className={styles.container_message}>
 									<ItemClub {...seasson.winner} className={styles.winner} /> 🏆

@@ -27,6 +27,9 @@
 .body tr:nth-child(-n + 4) .table_head_club {
 	border-left: 3px solid #164778;
 }
+.body tr:first-child .table_head_club {
+	border-left: 3px solid #137c45;
+}
 .table_socre_item {
 	border-bottom: 1px solid var(--dark-500);
 }
