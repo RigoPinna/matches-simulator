@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ItemClub, List } from '..';
 import { SeassonContext, TSeason } from '../../../store';
@@ -25,10 +25,6 @@ export const ListSeassons = () => {
 		setSeassons(getFilterSeassons());
 	}, [ctx.seasons]);
 
-	const allSeasons = useMemo(
-		() => seassons.all.sort((a, b) => b.number - a.number),
-		[seassons.all],
-	);
 	const onGoToSeasson = (uuid: string) => {
 		navigate(`/seasson/${uuid}`);
 	};
@@ -48,8 +44,8 @@ export const ListSeassons = () => {
 					</List.Item>
 				</List.Container>
 			)}
-			<List.Container title='All' className={styles.all_seasson}>
-				{allSeasons.map(seasson => (
+			<List.Container title='History' className={styles.all_seasson}>
+				{seassons.all.map(seasson => (
 					<List.Item
 						key={seasson.uuid}
 						onClick={() => {

@@ -2,8 +2,8 @@ import { useContext } from 'react';
 import { v4 as getUuid } from 'uuid';
 import { SeassonContext } from '../../store';
 import { Main } from '../../components/layouts';
-import { Header, Button, ListSeassons } from '../../components/ui';
-import { GameFilled, GameOutlined } from '../../components/icons';
+import { Header, Button, ListSeassons, List } from '../../components/ui';
+import { GameFilled, GameOutlined, Trophy } from '../../components/icons';
 import styles from './styles.module.css';
 import { useNavigate } from 'react-router-dom';
 export const HomaPage = () => {
@@ -40,7 +40,19 @@ export const HomaPage = () => {
 						</Button.Primary>
 					</div>
 				) : (
-					<ListSeassons />
+					<>
+						<List.Container className={styles.winners_btn}>
+							<List.Item className={styles.winner_item} onClick={() => navigate(`/winners`)}>
+								<span className={styles.badge}>
+									<Trophy />
+								</span>
+								<div className={styles.winner_info}>
+									<h4>Winners</h4>
+								</div>
+							</List.Item>
+						</List.Container>
+						<ListSeassons />
+					</>
 				)}
 			</Main>
 		</>
