@@ -1,7 +1,7 @@
 .container_table {
 	width: 100%;
 	position: sticky;
-	top: 64px;
+	top: 55px;
 	z-index: 4;
 	background: rgba(23, 23, 23, 0.1);
 	backdrop-filter: blur(33.5px);
