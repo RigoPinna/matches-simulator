@@ -1,5 +1,6 @@
 export * from './ArrowLeft';
 export * from './ArrowRight';
+export * from './Ball';
 export * from './Champion';
 export * from './Close';
 export * from './Fire';
