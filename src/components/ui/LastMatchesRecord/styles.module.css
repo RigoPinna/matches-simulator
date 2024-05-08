@@ -1,0 +1,39 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.description {
+	font-size: 12px;
+	color: var(--grey-400);
+	margin-top: 5px;
+}
+.container_list {
+	display: flex;
+	flex-flow: row nowrap;
+	gap: 8px;
+}
+.match {
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+	width: 24px;
+	height: 24px;
+	background: transparent;
+	border-radius: 100%;
+	color: #fff;
+	vertical-align: middle;
+}
+.match svg {
+	transform: scale(0.8);
+}
+.match_win {
+	background: #10c868;
+}
+.match_draw {
+	background: #8e8e93;
+}
+.match_lose {
+	background: #ff453a;
+}

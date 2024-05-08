@@ -1,0 +1,19 @@
+.title_header {
+	position: absolute;
+	display: block;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 16px !important;
+}
+.club_info {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	gap: 8px;
+	justify-content: center;
+	align-items: center;
+}
+.club_img {
+	height: 89px;
+}
