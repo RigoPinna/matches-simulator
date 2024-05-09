@@ -12,6 +12,7 @@ export interface IClub {
 	name: string;
 	color: string;
 	champions?: number;
+	supercups?: number;
 }
 
 export interface IItemTable {

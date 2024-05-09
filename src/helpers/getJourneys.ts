@@ -10,10 +10,23 @@ import { IClub, TJourney, TMatches } from '../store';
  * information about the visiting club with an initial score of 0.
  */
 const getMatches = (clubs: IClub[]) => {
-	const matches: TMatches[] = [];
+	const matchesOne: TMatches[] = [];
+	const matchesTwo: TMatches[] = [];
 	for (let i = 0; i < clubs.length; i++) {
 		for (let j = i + 1; j < clubs.length; j++) {
-			matches.push({
+			matchesOne.push({
+				uuid: getUuid(),
+				local: {
+					...clubs[i],
+					score: null,
+				},
+				visit: {
+					...clubs[j],
+					score: null,
+				},
+				status: 'TODO',
+			});
+			matchesTwo.push({
 				uuid: getUuid(),
 				local: {
 					...clubs[i],
@@ -27,7 +40,7 @@ const getMatches = (clubs: IClub[]) => {
 			});
 		}
 	}
-	return matches;
+	return [...matchesOne, ...matchesTwo];
 };
 
 /**
@@ -42,11 +55,13 @@ const getMatches = (clubs: IClub[]) => {
  */
 export const getJourneys = (clubs: IClub[]) => {
 	const matches = getMatches(clubs);
-	const numbersOfJourney = clubs.length - 1;
+
+	const numbersOfJourney = (clubs.length - 1) * 2;
 	const matchesByJourney = matches.length / numbersOfJourney;
 	const journeys: TJourney[] = [];
 	const clubsByJourney = new Set<string>();
 	let matchesCopy = [...matches];
+
 	for (let i = 0; i < numbersOfJourney; i++) {
 		const journey: Array<TMatches> = [];
 		let aux = 0;

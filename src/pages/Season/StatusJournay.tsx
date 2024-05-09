@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { Button, MatchList } from '../../components/ui';
+import { Button, ItemClub, MatchList } from '../../components/ui';
 import { useCurrentSeasonParams } from '../../hooks';
 import { SeassonContext } from '../../store';
 import styles from './styles.module.css';
@@ -62,10 +62,12 @@ export const StatusJourney = () => {
 				<>
 					<div className={styles.status_container}>
 						<h2>The regular season has ended</h2>
+						<h3>Champion:</h3>
+						<ItemClub {...season.table[0].club} />
 						{position <= 4 ? (
-							<p>Congratulations! your team is in the Semifinals 🎉</p>
+							<p>Congratulations! your team is in the Supercup 🎉</p>
 						) : (
-							<p>Sorry! Your team will not be in the semifinals</p>
+							<p>Sorry! Your team will not be in the SuperCup</p>
 						)}
 						<Button.Primary className={styles.button} onClick={goToSemifinals}>
 							Continue
@@ -82,10 +84,12 @@ export const StatusJourney = () => {
 					))}
 					<div className={styles.status_container}>
 						<h2>The regular season has ended</h2>
+						<h3>Champion:</h3>
+						<ItemClub {...season.table[0].club} />
 						{position <= 4 ? (
-							<p>Congratulations! your team is in the Semifinals 🎉</p>
+							<p>Congratulations! your team is in the Supercup 🎉</p>
 						) : (
-							<p>Sorry! Your team will not be in the semifinals</p>
+							<p>Sorry! Your team will not be in the SuperCup</p>
 						)}
 						<Button.Primary className={styles.button} onClick={goToSemifinals}>
 							Continue
