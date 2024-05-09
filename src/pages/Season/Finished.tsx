@@ -52,9 +52,15 @@ export const Finished = () => {
 					/>
 				))}
 				<div className={styles.status_container}>
+					{season?.table[0].club && (
+						<div className={styles.champion_container}>
+							<h1>League 🏆</h1>
+							<img src={season?.table[0].club.image} />
+						</div>
+					)}
 					{season?.fase.final.winners && (
 						<div className={styles.champion_container}>
-							<h1>Champion 🏆</h1>
+							<h1>Supercup 🏆</h1>
 							<img src={season?.fase.final.winners[0].image} />
 						</div>
 					)}

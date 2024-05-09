@@ -139,6 +139,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const updatedJourneys = season.fase.regular.matches.matches.map(jry => {
 				return jry.jid === matchesWithScore.jid ? matchesWithScore : jry;
 			});
+			const isActive = updatedJourneys.some(j => j.status === 'TODO');
 
 			const seasonUpdated: TSeason = {
 				...season,
@@ -149,7 +150,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 						...season.fase.regular,
 						currentJourney:
 							matchesWithScore.status === 'DONE' ? currentJourney + 1 : currentJourney,
-						status: updatedJourneys.some(j => j.status === 'TODO') ? 'ACTIVE' : 'FINISHED',
+						status: isActive ? 'ACTIVE' : 'FINISHED',
 						matches: {
 							...season.fase.regular.matches,
 							matches: updatedJourneys,
@@ -173,9 +174,24 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const updatedFases = { ...season.fase, [type]: fase };
 
 			const updatedSeason = { ...season, fase: updatedFases };
+			const winner = season.table[0].club;
+			const newClubs =
+				type === 'regular'
+					? state.clubs.map(club =>
+							winner.uuid === club.uuid
+								? {
+										...winner,
+										champions: winner?.champions ? winner.champions + 1 : 1,
+									}
+								: club,
+						)
+					: state.clubs;
+
+			localStorage.setItem('clubs', JSON.stringify(newClubs));
 
 			return {
 				...state,
+				clubs: newClubs,
 				seasons: setSeasons(updatedSeason, state.seasons),
 			};
 		}
@@ -366,7 +382,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const season = state.seasons.find(s => s.uuid === sid) as TSeason;
 			const clubs = state.clubs.map(item => {
 				return item.uuid === winner.uuid
-					? { ...winner, champions: item?.champions ? item.champions + 1 : 1 }
+					? { ...winner, supercups: item?.supercups ? item.supercups + 1 : 1 }
 					: item;
 			});
 			localStorage.setItem('clubs', JSON.stringify(clubs));
