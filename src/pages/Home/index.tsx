@@ -1,11 +1,13 @@
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { v4 as getUuid } from 'uuid';
 import { SeassonContext } from '../../store';
 import { Main } from '../../components/layouts';
 import { Header, Button, ListSeassons, List } from '../../components/ui';
-import { GameFilled, GameOutlined, Trophy } from '../../components/icons';
+import { Ball, GameFilled, GameOutlined, Trophy } from '../../components/icons';
+
 import styles from './styles.module.css';
-import { useNavigate } from 'react-router-dom';
+
 export const HomaPage = () => {
 	const { seasons, dispatch } = useContext(SeassonContext);
 	const navigate = useNavigate();
@@ -42,6 +44,14 @@ export const HomaPage = () => {
 				) : (
 					<>
 						<List.Container className={styles.winners_btn}>
+							<List.Item className={styles.winner_item} onClick={() => navigate(`/clubs`)}>
+								<span className={`${styles.badge} ${styles.badge_clubs}`}>
+									<Ball />
+								</span>
+								<div className={styles.winner_info}>
+									<h4>Clubs</h4>
+								</div>
+							</List.Item>
 							<List.Item className={styles.winner_item} onClick={() => navigate(`/winners`)}>
 								<span className={styles.badge}>
 									<Trophy />
