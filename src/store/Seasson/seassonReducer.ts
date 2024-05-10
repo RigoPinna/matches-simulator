@@ -394,7 +394,15 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					{
 						...season,
 						isCurrent: false,
-						winner: season.fase.final?.winners ? season.fase.final.winners[0] : null,
+						winner: season.fase.final?.winners
+							? [
+									{
+										...season.table[0].club,
+										score: 0,
+									},
+									season.fase.final.winners[0],
+								]
+							: null,
 					},
 					state.seasons,
 				),

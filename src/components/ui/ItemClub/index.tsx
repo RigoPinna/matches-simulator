@@ -1,6 +1,6 @@
 import styles from './styles.module.css';
 
-interface IItemClub {
+export interface IItemClub {
 	image: string;
 	name: string;
 	className?: string;
