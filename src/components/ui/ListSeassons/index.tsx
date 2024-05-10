@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ItemClub, List } from '..';
-import { SeassonContext, TSeason } from '../../../store';
+import { IItemClub, ItemClub, List } from '..';
+import { ITeamMatch, SeassonContext, TSeason } from '../../../store';
 import styles from './styles.module.css';
+import league from '../../../assets/champion.png';
+import supercup from '../../../assets/supercup.png';
 type TStateSeassons = {
 	current: TSeason | undefined;
 	all: TSeason[];
@@ -57,12 +59,23 @@ export const ListSeassons = () => {
 						<span className={styles.badge}>{seasson.number}</span>
 						<div className={styles.seasson_info}>
 							<h4>Season</h4>
-							{seasson.winner ? (
-								<div className={styles.container_message}>
-									<ItemClub {...seasson.winner} className={styles.winner} /> 🏆
+							{seasson?.winner && Array.isArray(seasson.winner) ? (
+								<div className={styles.seasson_winners}>
+									<div className={styles.container_message}>
+										League: <ItemClub {...seasson.winner[0]} className={styles.winner} />
+										🏆
+									</div>
+									<div className={styles.container_message}>
+										Supercup: <ItemClub {...seasson.winner[1]} className={styles.winner} />
+										🏆
+									</div>
 								</div>
 							) : (
-								<p>Current • 🔥</p>
+								<div className={styles.container_message}>
+									League:
+									<ItemClub {...(seasson?.winner as ITeamMatch)} className={styles.winner} />
+									🏆
+								</div>
 							)}
 						</div>
 					</List.Item>
