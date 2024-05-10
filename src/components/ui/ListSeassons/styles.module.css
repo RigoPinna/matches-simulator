@@ -29,11 +29,23 @@
 	display: flex;
 	flex-direction: row;
 	gap: 5px;
-	width: 100%;
 	height: 30px;
 	align-items: center;
 	justify-content: center;
 	font-size: 12px;
+}
+.seasson_info {
+	display: flex;
+	flex-flow: column wrap;
+	flex: 1;
+}
+.seasson_winners {
+	display: flex;
+	flex-flow: row nowrap;
+	gap: 16px;
+}
+.trophy {
+	height: 30px;
 }
 .winner {
 	gap: 5px;

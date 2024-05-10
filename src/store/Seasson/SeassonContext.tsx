@@ -59,7 +59,7 @@ export type TSeason = {
 	};
 	matches?: TMatch[];
 	table: IItemTable[];
-	winner: ITeamMatch | null;
+	winner: ITeamMatch[] | null;
 };
 
 const seasons: TSeason[] = [];
