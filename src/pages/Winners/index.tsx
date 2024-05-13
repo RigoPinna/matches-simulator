@@ -51,7 +51,7 @@ export const WinnersPage = () => {
 	};
 	const onUpdateClub = () => {
 		const clubs = JSON.parse(localStorage.getItem('clubs') || '[]') as IClub[];
-		if (clubSelected?.type === 'regular') {
+		if (clubSelected) {
 			localStorage.setItem(
 				'clubs',
 				JSON.stringify(
