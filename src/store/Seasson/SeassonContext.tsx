@@ -70,6 +70,7 @@ const clubs: IClub[] = [
 		image: america,
 		color: '#FFEB00',
 		champions: 0,
+		supercups: 0,
 	},
 	{
 		uuid: '2',
@@ -77,6 +78,7 @@ const clubs: IClub[] = [
 		image: chivas,
 		color: '#E22844',
 		champions: 0,
+		supercups: 0,
 	},
 	{
 		uuid: '3',
@@ -84,6 +86,7 @@ const clubs: IClub[] = [
 		image: cruz_azul,
 		color: '#2E9FC2',
 		champions: 0,
+		supercups: 0,
 	},
 	{
 		uuid: '4',
@@ -91,6 +94,7 @@ const clubs: IClub[] = [
 		image: monterrey,
 		color: '#1E3C67',
 		champions: 0,
+		supercups: 0,
 	},
 	{
 		uuid: '5',
@@ -98,6 +102,7 @@ const clubs: IClub[] = [
 		image: santos,
 		color: '#10C868',
 		champions: 0,
+		supercups: 0,
 	},
 	{
 		uuid: '6',
@@ -105,6 +110,7 @@ const clubs: IClub[] = [
 		image: tigres,
 		color: '#FFC200',
 		champions: 0,
+		supercups: 0,
 	},
 ];
 export type TState = {

@@ -174,24 +174,41 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const updatedFases = { ...season.fase, [type]: fase };
 
 			const updatedSeason = { ...season, fase: updatedFases };
-			const winner = season.table[0].club;
-			const newClubs =
-				type === 'regular'
-					? state.clubs.map(club =>
-							winner.uuid === club.uuid
-								? {
-										...winner,
-										champions: winner?.champions ? winner.champions + 1 : 1,
-									}
-								: club,
-						)
-					: state.clubs;
+			console.log(state.clubs);
+			let clubs: IClub[] = [...state.clubs];
 
-			localStorage.setItem('clubs', JSON.stringify(newClubs));
+			if (type === 'regular' && status === 'BLOCKED') {
+				const winner = season.table[0].club;
+				const clubsUpdated = state.clubs.map(club =>
+					winner.uuid === club.uuid
+						? {
+								...club,
+								champions: club?.champions ? club.champions + 1 : 1,
+								supercups: club?.supercups || 0,
+							}
+						: club,
+				);
+
+				clubs = [...clubsUpdated];
+				localStorage.setItem('clubs', JSON.stringify(clubsUpdated));
+			} else if (type == 'final' && status === 'BLOCKED') {
+				const winner = season?.fase?.final?.winners && season?.fase?.final?.winners[0];
+				const clubsUpdated = state.clubs.map(club =>
+					winner?.uuid === club.uuid
+						? {
+								...club,
+								supercups: club?.supercups ? club.supercups + 1 : 1,
+								champions: club?.champions || 0,
+							}
+						: club,
+				);
+				clubs = [...clubsUpdated];
+				localStorage.setItem('clubs', JSON.stringify(clubsUpdated));
+			}
 
 			return {
 				...state,
-				clubs: newClubs,
+				clubs,
 				seasons: setSeasons(updatedSeason, state.seasons),
 			};
 		}
@@ -378,18 +395,11 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			};
 		}
 		case '[SEASSON] - FINISHED SEASON': {
-			const { sid, winner } = action.payload as { sid: string; winner: IClub };
+			const { sid } = action.payload as { sid: string; winner: IClub };
 			const season = state.seasons.find(s => s.uuid === sid) as TSeason;
-			const clubs = state.clubs.map(item => {
-				return item.uuid === winner.uuid
-					? { ...winner, supercups: item?.supercups ? item.supercups + 1 : 1 }
-					: item;
-			});
-			localStorage.setItem('clubs', JSON.stringify(clubs));
+
 			return {
 				...state,
-				clubs,
-
 				seasons: setSeasons(
 					{
 						...season,

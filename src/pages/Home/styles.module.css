@@ -56,7 +56,7 @@
 	font-size: 18px;
 }
 .winner_info p {
-	font-size: 12px;
+	font-size: clamp(0.5rem, 0.375rem + 1vw, 0.75rem);
 	color: var(--grey-400);
 }
 .winners_btn {
