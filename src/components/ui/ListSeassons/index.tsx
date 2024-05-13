@@ -33,7 +33,7 @@ export const ListSeassons = () => {
 	return (
 		<div>
 			{seassons.current && (
-				<List.Container className={styles.current_seasson} title='Current'>
+				<List.Container className={styles.current_seasson} title='Current season:'>
 					<List.Item
 						onClick={() => {
 							seassons.current?.uuid && onGoToSeasson(seassons.current.uuid);
@@ -46,7 +46,7 @@ export const ListSeassons = () => {
 					</List.Item>
 				</List.Container>
 			)}
-			<List.Container title='History' className={styles.all_seasson}>
+			<List.Container title='History seasons:' className={styles.all_seasson}>
 				{history.map(seasson => (
 					<List.Item
 						key={seasson.uuid}
@@ -59,14 +59,26 @@ export const ListSeassons = () => {
 							<h4>Season</h4>
 							{Array.isArray(seasson.winner) ? (
 								<div className={styles.seasson_winners}>
-									<div className={styles.container_message}>
-										League: <ItemClub {...seasson.winner[0]} className={styles.winner} />
-										🏆
-									</div>
-									<div className={styles.container_message}>
-										Supercup: <ItemClub {...seasson.winner[1]} className={styles.winner} />
-										🏆
-									</div>
+									{seasson.winner[0].uuid === seasson.winner[1].uuid ? (
+										<>
+											<div className={styles.container_message}>
+												League & Supercup:{' '}
+												<ItemClub {...seasson.winner[0]} className={styles.winner} />
+												🏆🏆
+											</div>
+										</>
+									) : (
+										<>
+											<div className={styles.container_message}>
+												League: <ItemClub {...seasson.winner[0]} className={styles.winner} />
+												🏆
+											</div>
+											<div className={styles.container_message}>
+												Supercup: <ItemClub {...seasson.winner[1]} className={styles.winner} />
+												🏆
+											</div>
+										</>
+									)}
 								</div>
 							) : (
 								<>
