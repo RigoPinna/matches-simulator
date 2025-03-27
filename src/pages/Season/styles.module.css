@@ -36,6 +36,7 @@
 	display: flex;
 	align-items: center;
 	flex-direction: column;
+	position: relative;
 }
 .champion_container img {
 	margin-top: 12px;
@@ -70,6 +71,45 @@
 	right: -32px;
 	bottom: -12px;
 	transform: rotate(6.29deg);
+}
+.champion_team {
+	width: auto;
+	height:96px;
+}
+.winner_wrapper {
+	display: flex;
+	flex-flow: row nowrap;
+	gap: 45px;
+	align-items: center;
+	justify-content:center;
+}
+.trophy {
+	height: 84px;
+	position: absolute;
+	bottom: -10px;
+	right: -20px;
+	z-index: 3;
+	/* filter: drop-shadow(5px 5px 10px rgb(255, 0, 0)); */
+}
+.trophy_super_cup {
+	transform: translate(30px, 0);
+	z-index: 2;
+}
+.last_winner {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	margin-left: auto;
+}
+.last_winner span {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--grey-400);
+}
+.last_winner img {
+	height:29px
 }
 @media only screen and (max-height: 500px) {
 	.wrapper_table {
