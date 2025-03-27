@@ -6,7 +6,7 @@ import { useCurrentSeasonParams } from '../../hooks';
 import { Button, MatchList } from '../../components/ui';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
 import { SeassonContext } from '../../store';
-
+import supercupImg from '../../assets/supercup.png';
 export const Final = () => {
 	const { dispatch } = useContext(SeassonContext);
 	const season = useCurrentSeasonParams();
@@ -99,8 +99,9 @@ export const Final = () => {
 						<div className={styles.status_container}>
 							{winner && (
 								<div className={styles.champion_container}>
-									<h1>Champion 🏆</h1>
+									<h1>Supercup 🏆</h1>
 									<img src={winner.image} />
+
 								</div>
 							)}
 

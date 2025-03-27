@@ -62,8 +62,6 @@ export const StatusJourney = () => {
 				<>
 					<div className={styles.status_container}>
 						<h2>The regular season has ended</h2>
-						<h3>Champion:</h3>
-						<ItemClub {...season.table[0].club} />
 						{position <= 4 ? (
 							<p>Congratulations! your team is in the Supercup 🎉</p>
 						) : (
@@ -84,8 +82,6 @@ export const StatusJourney = () => {
 					))}
 					<div className={styles.status_container}>
 						<h2>The regular season has ended</h2>
-						<h3>Champion:</h3>
-						<ItemClub {...season.table[0].club} />
 						{position <= 4 ? (
 							<p>Congratulations! your team is in the Supercup 🎉</p>
 						) : (
