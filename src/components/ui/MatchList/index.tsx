@@ -38,19 +38,14 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 		}, 900);
 	};
 	function showButton() {
-		const myMatch = matches.value.find(
-			match => match.local.uuid === myClub?.uuid || match.visit.uuid === myClub?.uuid,
+		const oltherMatches = matches.value.filter(
+			match => match.local.uuid !== myClub?.uuid && match.visit.uuid !== myClub?.uuid,
 		);
-		if (typeof myMatch === 'undefined') {
-			return matches.value.some(match => match.status === 'TODO');
-		}
-		if (myMatch?.status === 'DONE') {
-			return matches.status === 'TODO';
-		}
-		if (myMatch?.status === 'TODO') {
-			const olthersMatches = matches.value.filter(item => item.uuid !== myMatch.uuid);
-			return olthersMatches.some(match => match.status === 'TODO');
-		}
+
+		const pendingMatches = oltherMatches.some(match => match.status === 'TODO');
+
+		return pendingMatches
+
 	}
 	return (
 		<div className={`${styles.container} ${styles.current_matches}`}>
