@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { Button, ItemClub, MatchList } from '../../components/ui';
+import { Button, MatchList } from '../../components/ui';
 import { useCurrentSeasonParams } from '../../hooks';
 import { SeassonContext } from '../../store';
 import styles from './styles.module.css';

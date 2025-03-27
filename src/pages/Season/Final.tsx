@@ -6,7 +6,6 @@ import { useCurrentSeasonParams } from '../../hooks';
 import { Button, MatchList } from '../../components/ui';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
 import { SeassonContext } from '../../store';
-import supercupImg from '../../assets/supercup.png';
 export const Final = () => {
 	const { dispatch } = useContext(SeassonContext);
 	const season = useCurrentSeasonParams();
