@@ -6,6 +6,8 @@ import chivas from '../../assets/chivas-logo.png';
 import cruz_azul from '../../assets/cruz-azul-logo.png';
 import monterrey from '../../assets/monterrey-logo.png';
 import santos from '../../assets/santos-logo.png';
+import pumas from '../../assets/pumas-logo.png';
+import toluca from '../../assets/toluca-logo.png';
 export interface IClub {
 	uuid: string;
 	image: string;
@@ -112,6 +114,22 @@ const clubs: IClub[] = [
 		champions: 0,
 		supercups: 0,
 	},
+	{
+		uuid: '7',
+		name: 'Pumas',
+		image: pumas,
+		color: '#a59366',
+		champions: 0,
+		supercups: 0,
+	},
+	{
+		uuid: '8',
+		name: 'Toluca',
+		image: toluca,
+		color: '#d11c34',
+		champions: 0,
+		supercups: 0,
+	},
 ];
 export type TState = {
 	myClub: IClub | undefined;
@@ -123,6 +141,6 @@ export const globalState: TState = {
 	myClub: clubs[0],
 	seasons,
 	clubs,
-	dispatch: () => {},
+	dispatch: () => { },
 };
 export const SeassonContext = createContext(globalState);
