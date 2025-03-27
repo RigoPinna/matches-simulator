@@ -26,14 +26,14 @@ const getMatches = (clubs: IClub[]) => {
 				},
 				status: 'TODO',
 			});
-			matchesTwo.push({
+			matchesOne.push({
 				uuid: getUuid(),
 				local: {
-					...clubs[i],
+					...clubs[j],
 					score: null,
 				},
 				visit: {
-					...clubs[j],
+					...clubs[i],
 					score: null,
 				},
 				status: 'TODO',
@@ -55,9 +55,8 @@ const getMatches = (clubs: IClub[]) => {
  */
 export const getJourneys = (clubs: IClub[]) => {
 	const matches = getMatches(clubs);
-
 	const numbersOfJourney = (clubs.length - 1) * 2;
-	const matchesByJourney = matches.length / numbersOfJourney;
+	const matchesByJourney = Math.round(matches.length / numbersOfJourney);
 	const journeys: TJourney[] = [];
 	const clubsByJourney = new Set<string>();
 	let matchesCopy = [...matches];
@@ -79,6 +78,9 @@ export const getJourneys = (clubs: IClub[]) => {
 				break;
 			}
 			aux++;
+		}
+		if(matchesCopy.length === 1) {
+			journey.push(matchesCopy[0]);
 		}
 		clubsByJourney.clear();
 		journeys.push({
