@@ -8,14 +8,24 @@ import { StatusSemifinals } from './StatusSemifinals';
 import { Final } from './Final';
 import styles from './styles.module.css';
 import { Finished } from './Finished';
+import { SeassonContext } from '../../store';
+import { useContext } from 'react';
 
 export const SeasonPage = () => {
 	const navigate = useNavigate();
 	const season = useCurrentSeasonParams();
-
+	const { seasons } = useContext(SeassonContext);
 	if (typeof season === 'undefined') {
 		return <></>;
 	}
+	const getLastWinner = () => {
+		const lastSeason = seasons[seasons.length - 2];
+		if (lastSeason && lastSeason.winner) {
+			return lastSeason.table[0];
+		}
+		return null;
+	}
+	const lastWinner = getLastWinner();
 	return (
 		<>
 			<Header>
@@ -23,6 +33,14 @@ export const SeasonPage = () => {
 					<ArrowLeft />
 				</Button.Secondary>
 				<h1>Season {season.number}</h1>
+				<div className={styles.last_winner}>
+					{lastWinner && (
+						<>
+							<img src={lastWinner.club.image} alt={lastWinner.club.name} />
+							<span>Last winner</span>
+						</>
+					)}
+				</div>
 			</Header>
 			<div className={styles.container_table}>
 				<div className={styles.wrapper_table}>
