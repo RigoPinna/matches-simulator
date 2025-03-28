@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { useCurrentSeasonParams } from '../../hooks';
 import { MatchList } from '../../components/ui';
+import ligeImg from '../../assets/champion.png';
+import supercupImg from '../../assets/supercup.png';
 import styles from './styles.module.css';
 export const Finished = () => {
 	const { season } = useCurrentSeasonParams();
@@ -52,31 +54,32 @@ export const Finished = () => {
 					/>
 				))}
 				<div className={styles.status_container}>
-					{Array.isArray(season?.winner) ? (
-						<>
-							{season?.table[0].club && (
+					<div className={styles.winner_wrapper}>
+						{
+							season?.fase?.final?.winners && season?.table[0].club.uuid !== season?.fase?.final?.winners[0].uuid ? (
+								<>
+									<div className={styles.champion_container}>
+										<img className={styles.champion_team} src={season?.table[0].club.image} />
+										<img className={styles.trophy} src={ligeImg} />
+									</div>
+									<div className={styles.champion_container}>
+										<img className={styles.champion_team} src={season?.fase?.final?.winners[0].image} />
+										<img className={styles.trophy} src={supercupImg} />
+									</div>
+								</>
+							) : (
 								<div className={styles.champion_container}>
-									<h1>League 🏆</h1>
-									<img src={season?.table[0].club.image} />
+									<img className={styles.champion_team} src={season?.table[0].club.image} />
+									<img className={styles.trophy} src={ligeImg} />
+									<img className={`${styles.trophy} ${styles.trophy_super_cup}`} src={supercupImg} />
 								</div>
-							)}
-							{season?.fase.final.winners && (
-								<div className={styles.champion_container}>
-									<h1>Supercup 🏆</h1>
-									<img src={season?.fase.final.winners[0].image} />
-								</div>
-							)}
-						</>
-					) : (
-						<>
-							{season?.fase.final.winners && (
-								<div className={styles.champion_container}>
-									<h1>League 🏆</h1>
-									<img src={season?.fase.final.winners[0].image} />
-								</div>
-							)}
-						</>
-					)}
+							)
+						}
+
+
+
+
+					</div>
 				</div>
 			</details>
 		</div>
