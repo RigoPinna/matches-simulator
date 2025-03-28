@@ -6,6 +6,7 @@ interface ITable {
 	table: IItemTable[];
 }
 export const Table = ({ table }: ITable) => {
+
 	return (
 		<table className={styles.table}>
 			<thead className={styles.table_head}>
@@ -19,6 +20,7 @@ export const Table = ({ table }: ITable) => {
 					<th>GF</th>
 					<th>GA</th>
 					<th>GD</th>
+					<th></th>
 				</tr>
 			</thead>
 			<tbody className={styles.body}>

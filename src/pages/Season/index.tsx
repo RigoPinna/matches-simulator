@@ -11,7 +11,7 @@ import { Finished } from './Finished';
 
 export const SeasonPage = () => {
 	const navigate = useNavigate();
-	const season = useCurrentSeasonParams();
+	const { season } = useCurrentSeasonParams();
 
 	if (typeof season === 'undefined') {
 		return <></>;

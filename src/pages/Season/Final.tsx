@@ -9,7 +9,7 @@ import { SeassonContext } from '../../store';
 
 export const Final = () => {
 	const { dispatch } = useContext(SeassonContext);
-	const season = useCurrentSeasonParams();
+	const { season } = useCurrentSeasonParams();
 	const final = season?.fase.final;
 	const semifinals = season?.fase.semifinal;
 	const winner = final?.winners && final?.winners[0];

@@ -10,3 +10,6 @@ export * from './Loader';
 export * from './Ok';
 export * from './Star';
 export * from './Trophy';
+export * from './Win';
+export * from './Draw';
+export * from './Lost';
