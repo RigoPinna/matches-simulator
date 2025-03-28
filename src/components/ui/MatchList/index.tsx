@@ -21,7 +21,7 @@ const TYPE_ACTION = {
 Object.freeze(TYPE_ACTION);
 export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 	const { myClub, dispatch } = useContext(SeassonContext);
-	const season = useCurrentSeasonParams();
+	const { season } = useCurrentSeasonParams();
 	const [isLoading, setIsLoading] = useState(false);
 	const simulateMatches = () => {
 		setIsLoading(true);

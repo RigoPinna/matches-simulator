@@ -21,7 +21,7 @@ Object.freeze(MATCH_TYPE);
 export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch) => {
 	const { myClub, dispatch } = useContext(SeassonContext);
 	const { isOpen, onClose, onOpen } = useModal(false);
-	const season = useCurrentSeasonParams();
+	const { season } = useCurrentSeasonParams();
 	const [form, setForm] = useState({ local: null, visitor: null });
 	const isMyClub = useMemo(
 		() => myClub?.uuid === local.uuid || myClub?.uuid === visit.uuid,

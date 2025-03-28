@@ -9,5 +9,5 @@ export const useCurrentSeasonParams = () => {
 
 	const season = useMemo(() => seasons.find(({ uuid }) => uuid === sid), [seasons, sid]);
 
-	return season;
+	return {season, sid};
 };

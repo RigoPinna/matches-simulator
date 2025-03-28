@@ -1,9 +1,11 @@
 import styles from './styles.module.css';
-import { ItemClub } from '..';
+import { ItemClub, LastMatches } from '..';
+import { useCurrentSeasonParams } from '../../../hooks';
 
 interface IItemTable {
 	positions: number;
 	club: {
+		uuid: string;
 		image: string;
 		name: string;
 	};
@@ -17,6 +19,7 @@ interface IItemTable {
 	gd: number;
 }
 export const ItemTable = (props: IItemTable) => {
+	const { sid } = useCurrentSeasonParams()
 	return (
 		<tr>
 			<td className={`${styles.table_head_club} `}>
@@ -34,7 +37,8 @@ export const ItemTable = (props: IItemTable) => {
 			<td className={`${styles.table_pts} ${styles.table_socre_item}`}>{props.pts}</td>
 			<td className={styles.table_socre_item}>{props.gf}</td>
 			<td className={styles.table_socre_item}>{props.ga}</td>
-			<td className={styles.table_socre_item}>{props.gd}</td>
+			<td className={styles.table_socre_item}>{props.gd} </td>
+			<td className={styles.table_last_matches}><LastMatches seasonId={sid || ''} clubId={props.club.uuid} /></td>
 		</tr>
 	);
 };

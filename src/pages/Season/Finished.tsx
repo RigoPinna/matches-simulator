@@ -5,7 +5,7 @@ import ligeImg from '../../assets/champion.png';
 import supercupImg from '../../assets/supercup.png';
 import styles from './styles.module.css';
 export const Finished = () => {
-	const season = useCurrentSeasonParams();
+	const { season } = useCurrentSeasonParams();
 	const isFinished = useMemo(() => {
 		return (
 			season?.fase.regular.status === 'BLOCKED' &&
