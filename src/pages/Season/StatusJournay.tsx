@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
 export const StatusJourney = () => {
 	const { myClub, dispatch } = useContext(SeassonContext);
-	const season = useCurrentSeasonParams();
+	const { season } = useCurrentSeasonParams();
 	const regular = season?.fase.regular;
 	useEffect(() => {
 		if (season) {

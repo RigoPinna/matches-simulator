@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
 export const StatusSemifinals = () => {
 	const { myClub, dispatch } = useContext(SeassonContext);
-	const season = useCurrentSeasonParams();
+	const { season } = useCurrentSeasonParams();
 	const semifinals = season?.fase.semifinal;
 	const isWinner = useMemo(
 		() => semifinals?.winners?.some(item => item.uuid === myClub?.uuid),

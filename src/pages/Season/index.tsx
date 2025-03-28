@@ -13,7 +13,7 @@ import { useContext } from 'react';
 
 export const SeasonPage = () => {
 	const navigate = useNavigate();
-	const season = useCurrentSeasonParams();
+	const { season } = useCurrentSeasonParams();
 	const { seasons } = useContext(SeassonContext);
 	if (typeof season === 'undefined') {
 		return <></>;

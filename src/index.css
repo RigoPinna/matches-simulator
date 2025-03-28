@@ -17,10 +17,14 @@
 
 	--grey-100: #6d6d6d;
 	--grey-200: #8a8a8a;
+	--grey-300: #8E8E93;
 	--grey-400: #a2a2a2;
 	--grey-500: #bdbdbd;
 	--primary: #0a84ff;
 
+	--color-green: #10C868;
+	--color-red: #FF453A;
+	--color-white: #fff;
 	--border-radius-sm: 14px;
 	--border-radius-lg: 23px;
 }
