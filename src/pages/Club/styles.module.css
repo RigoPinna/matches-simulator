@@ -1,0 +1,67 @@
+.header {
+   display: flex;
+   flex-direction: column;
+   gap:8px;
+   justify-content: center;
+   align-items: center;
+   padding-top:12px;
+}
+.list {
+    display: flex;
+    padding: 27px 0;
+    list-style: none;
+    justify-content:space-around
+}
+.list_item {
+    display: flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction: column;
+    gap:5px;
+    background-color: var(--dark-500);
+    border-radius: 23px;
+    width: 100px;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+}
+.champ {
+    position: absolute;
+    top: 5px;
+    right: -18px;
+    opacity: 0.5;
+    width: 57px;
+    z-index: 1;
+}
+.number_trophy {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+}
+.title {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--grey-400);
+}
+.number_trophy, .title {
+    z-index: 2;
+}
+.statistic_wrapper {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    gap: 5px;
+    justify-content: center;
+}
+.statistic {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.statistic{
+    font-size: 8px;
+
+}
+.statistic  > p {
+    font-weight: bold;
+}
