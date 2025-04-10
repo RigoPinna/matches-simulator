@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SeassonContext } from '../store';
-import { ClubsListPage, HomaPage, SeasonPage, WinnersPage } from '../pages';
+import { ClubPage, ClubsListPage, HomaPage, SeasonPage, WinnersPage } from '../pages';
 
 export const MainRouter = () => {
 	const { dispatch } = useContext(SeassonContext);
@@ -20,6 +20,7 @@ export const MainRouter = () => {
 				<Route path='seasson/:sid' element={<SeasonPage />} />
 				<Route path='winners' element={<WinnersPage />} />
 				<Route path='clubs' element={<ClubsListPage />} />
+				<Route path='club/:cid' element={<ClubPage />} />
 			</Routes>
 		</BrowserRouter>
 	);
