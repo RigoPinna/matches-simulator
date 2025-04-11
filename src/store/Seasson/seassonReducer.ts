@@ -174,7 +174,6 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const updatedFases = { ...season.fase, [type]: fase };
 
 			const updatedSeason = { ...season, fase: updatedFases };
-			console.log(state.clubs);
 			let clubs: IClub[] = [...state.clubs];
 
 			if (type === 'regular' && status === 'BLOCKED') {
@@ -182,10 +181,10 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				const clubsUpdated = state.clubs.map(club =>
 					winner.uuid === club.uuid
 						? {
-								...club,
-								champions: club?.champions ? club.champions + 1 : 1,
-								supercups: club?.supercups || 0,
-							}
+							...club,
+							champions: club?.champions ? club.champions + 1 : 1,
+							supercups: club?.supercups || 0,
+						}
 						: club,
 				);
 
@@ -196,10 +195,10 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				const clubsUpdated = state.clubs.map(club =>
 					winner?.uuid === club.uuid
 						? {
-								...club,
-								supercups: club?.supercups ? club.supercups + 1 : 1,
-								champions: club?.champions || 0,
-							}
+							...club,
+							supercups: club?.supercups ? club.supercups + 1 : 1,
+							champions: club?.champions || 0,
+						}
 						: club,
 				);
 				clubs = [...clubsUpdated];
@@ -406,12 +405,12 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 						isCurrent: false,
 						winner: season.fase.final?.winners
 							? [
-									{
-										...season.table[0].club,
-										score: 0,
-									},
-									season.fase.final.winners[0],
-								]
+								{
+									...season.table[0].club,
+									score: 0,
+								},
+								season.fase.final.winners[0],
+							]
 							: null,
 					},
 					state.seasons,
@@ -432,17 +431,17 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const newTable =
 				type === 'regular'
 					? orderMyTeam(state.myClub as IClub, season.table, {
-							...journey,
-							value: matches,
-						} as TJourney)
+						...journey,
+						value: matches,
+					} as TJourney)
 					: season.table;
 			const journeys = fase.matches.matches.map(journey =>
 				journey.jid === jid
 					? {
-							...journey,
-							status: isDone ? 'DONE' : 'TODO',
-							value: matchesDone,
-						}
+						...journey,
+						status: isDone ? 'DONE' : 'TODO',
+						value: matchesDone,
+					}
 					: journey,
 			);
 			let winners;

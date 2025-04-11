@@ -17,7 +17,7 @@ export const useStatistics = (cid: string) => {
     const allMatches = seasons.map(season => [
       ...season.fase.regular.matches.matches,
       ...season.fase.semifinal.matches.matches,
-      ...season.fase.final.matches.matches]).flat()
+      ...season.fase.final.matches.matches]).flat();
     const matchesDone = allMatches.filter(match => match.status === 'DONE');
     const matches = matchesDone.map(match => match.value).flat();
     const matchesByClub = matches.filter(match => match.local.uuid === cid || match.visit.uuid === cid)
@@ -38,7 +38,7 @@ export const useStatistics = (cid: string) => {
       wins,
       draws,
       losses,
-      winPercentage: wins / matchesByClub.length * 100,
+      winPercentage: wins > 0 ? (wins / matchesByClub.length * 100) : 0,
       matchesDone: matchesByClub.length
     })
   }, [])

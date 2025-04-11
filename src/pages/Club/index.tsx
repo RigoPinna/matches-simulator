@@ -31,7 +31,10 @@ export const ClubPage = () => {
                 <div className={styles.header}>
                     <img src={club?.image} alt={club?.name} />
                     <h2>{club?.name}</h2>
-                    <LastMatches showtitles clubId={club.uuid} seasonId={seasons[seasons.length - 1].uuid} />
+                    <LastMatches
+                        showtitles
+                        clubId={club.uuid}
+                        seasonId={seasons[seasons.length - 1]?.uuid || ''} />
 
                 </div>
                 <ul className={styles.list}>
