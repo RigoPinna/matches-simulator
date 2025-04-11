@@ -109,7 +109,8 @@
 	color: var(--grey-400);
 }
 .last_winner img {
-	height:29px
+	height:29px;
+	margin-right: 5px;
 }
 @media only screen and (max-height: 500px) {
 	.wrapper_table {
