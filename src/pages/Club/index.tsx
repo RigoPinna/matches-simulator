@@ -1,19 +1,20 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "../../components/icons";
 import { Main } from "../../components/layouts";
-import { Button, Header, LastMatches } from "../../components/ui";
+import { Button, Header, LastMatches, MatchList } from "../../components/ui";
 import { useContext } from "react";
 import { SeassonContext } from "../../store";
 import lige from '../../assets/champion.png'
 import supercup from '../../assets/supercup.png'
 import styles from "./styles.module.css";
-import { useStatistics } from "../../hooks/useStatistics";
+import { useStatistics } from "../../hooks/";
 export const ClubPage = () => {
     const navigate = useNavigate();
     const { cid } = useParams();
     const { clubs, seasons } = useContext(SeassonContext);
-    const statistics = useStatistics(cid || '')
+    const [statistics, lastMatches] = useStatistics(cid || '');
     const club = clubs.find(({ uuid }) => uuid === cid);
+
     if (!club) {
         return <div>Club not found</div>;
     }
@@ -59,6 +60,15 @@ export const ClubPage = () => {
                         <h3 className={styles.title}>Winning percentage</h3>
                     </li>
                 </ul>
+                <MatchList isCurrent={false} matches={{
+                    jid: 'none',
+                    status: 'DONE',
+                    value: lastMatches
+                }}
+                    title="All matches"
+                    type="REGULAR"
+
+                />
             </Main>
         </>
     )

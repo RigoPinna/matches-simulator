@@ -62,7 +62,7 @@ export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch)
 	return (
 		<>
 			<li className={styles.match} onClick={isMyClub && status === 'TODO' ? onOpen : undefined}>
-				{isMyClub && (
+				{(isMyClub && status === 'TODO') && (
 					<span className={styles.match_player}>
 						<Star />
 					</span>
