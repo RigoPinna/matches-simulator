@@ -10,11 +10,13 @@ import pumas from '../../assets/pumas-logo.png';
 import toluca from '../../assets/toluca-logo.png';
 export interface IClub {
 	uuid: string;
-	image: string;
+	image?: string;
 	name: string;
 	color: string;
 	champions?: number;
 	supercups?: number;
+	plateChampions?: number;
+	plateSupercups?: number;
 }
 
 export interface IItemTable {
@@ -50,10 +52,20 @@ export type TFase = {
 	currentJourney: number;
 };
 
+export type TLeague = 'PRIMERA' | 'PLATE';
+
+export type TPromotion = {
+	promoted: IClub;
+	relegated: IClub;
+};
+
 export type TSeason = {
 	uuid: string;
 	number: number;
 	isCurrent: boolean;
+	league: TLeague;
+	pairId?: string;
+	promotion?: TPromotion;
 	fase: {
 		regular: TFase;
 		semifinal: TFase & { winners?: ITeamMatch[] };
@@ -131,16 +143,79 @@ const clubs: IClub[] = [
 		supercups: 0,
 	},
 ];
+
+// Plate Ligue: segunda división. Sin logos propios todavía, por eso no
+// traen `image` — ItemClub cae a una insignia con iniciales + color.
+const plateClubs: IClub[] = [
+	{
+		uuid: 'plate-1',
+		name: 'Atlante',
+		color: '#0b3d91',
+		plateChampions: 0,
+		plateSupercups: 0,
+	},
+	{
+		uuid: 'plate-2',
+		name: 'Dorados de Sinaloa',
+		color: '#c9a227',
+		plateChampions: 0,
+		plateSupercups: 0,
+	},
+	{
+		uuid: 'plate-3',
+		name: 'Alebrijes de Oaxaca',
+		color: '#1e7a34',
+		plateChampions: 0,
+		plateSupercups: 0,
+	},
+	{
+		uuid: 'plate-4',
+		name: 'Leones Negros UdeG',
+		color: '#222222',
+		plateChampions: 0,
+		plateSupercups: 0,
+	},
+	{
+		uuid: 'plate-5',
+		name: 'Correcaminos UAT',
+		color: '#e06c00',
+		plateChampions: 0,
+		plateSupercups: 0,
+	},
+	{
+		uuid: 'plate-6',
+		name: 'Tampico Madero',
+		color: '#3aa8d8',
+		plateChampions: 0,
+		plateSupercups: 0,
+	},
+	{
+		uuid: 'plate-7',
+		name: 'Cancún FC',
+		color: '#00a3a3',
+		plateChampions: 0,
+		plateSupercups: 0,
+	},
+	{
+		uuid: 'plate-8',
+		name: 'Mineros de Zacatecas',
+		color: '#2e7d32',
+		plateChampions: 0,
+		plateSupercups: 0,
+	},
+];
 export type TState = {
 	myClub: IClub | undefined;
 	seasons: TSeason[];
 	clubs: IClub[];
+	plateClubs: IClub[];
 	dispatch: (action: TAction) => void;
 };
 export const globalState: TState = {
 	myClub: clubs[0],
 	seasons,
 	clubs,
+	plateClubs,
 	dispatch: () => { },
 };
 export const SeassonContext = createContext(globalState);

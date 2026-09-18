@@ -3,7 +3,7 @@ import styles from './styles.module.css';
 // import { SeassonContext } from '../../store';
 import confetti from 'canvas-confetti';
 import { useCurrentSeasonParams } from '../../hooks';
-import { Button, MatchList } from '../../components/ui';
+import { Button, ClubBadge, MatchList } from '../../components/ui';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
 import { SeassonContext } from '../../store';
 export const Final = () => {
@@ -99,7 +99,7 @@ export const Final = () => {
 							{winner && (
 								<div className={styles.champion_container}>
 									<h1>Supercup 🏆</h1>
-									<img src={winner.image} />
+									<ClubBadge className={styles.champion_team} image={winner.image} name={winner.name} color={winner.color} />
 
 								</div>
 							)}

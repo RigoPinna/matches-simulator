@@ -54,3 +54,16 @@
 .winner > img {
 	height: 18px;
 }
+.promotion_item {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	background: rgba(37, 37, 37, 0.35);
+	padding: 12px 16px;
+	border-bottom: 1px solid rgba(23, 23, 23, 0.75);
+	cursor: default;
+}
+.list .promotion_item:last-child {
+	border-radius: 0 0 23px 23px;
+}
