@@ -1,31 +1,38 @@
-import { useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import { Fragment, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ItemClub, List } from '..';
-import { ITeamMatch, SeassonContext, TSeason } from '../../../store';
+import { ITeamMatch, SeassonContext, TLeague, TSeason } from '../../../store';
 import styles from './styles.module.css';
 type TStateSeassons = {
 	current: TSeason | undefined;
 	all: TSeason[];
 };
-export const ListSeassons = () => {
+interface IListSeassons {
+	league: TLeague;
+}
+export const ListSeassons = ({ league }: IListSeassons) => {
 	const ctx = useContext(SeassonContext);
 	const navigate = useNavigate();
 	const [seassons, setSeassons] = useState<TStateSeassons>({
 		current: undefined,
 		all: [],
 	});
+	const leagueSeassons = useMemo(
+		() => ctx.seasons.filter(seasson => seasson.league === league),
+		[ctx.seasons, league],
+	);
 	const getFilterSeassons = useCallback((): TStateSeassons => {
 		return {
-			current: ctx.seasons.find(seasson => seasson.isCurrent === true),
-			all: ctx.seasons,
+			current: leagueSeassons.find(seasson => seasson.isCurrent === true),
+			all: leagueSeassons,
 		};
-	}, [ctx.seasons]);
+	}, [leagueSeassons]);
 
 	const history = useMemo(() => seassons.all.sort((a, b) => a.number - b.number), [seassons.all]);
 
 	useEffect(() => {
 		setSeassons(getFilterSeassons());
-	}, [ctx.seasons]);
+	}, [leagueSeassons]);
 
 	const onGoToSeasson = (uuid: string) => {
 		navigate(`/seasson/${uuid}`);
@@ -48,8 +55,8 @@ export const ListSeassons = () => {
 			)}
 			<List.Container title='History seasons:' className={styles.all_seasson}>
 				{history.map(seasson => (
+					<Fragment key={seasson.uuid}>
 					<List.Item
-						key={seasson.uuid}
 						onClick={() => {
 							onGoToSeasson(seasson.uuid);
 						}}
@@ -95,6 +102,19 @@ export const ListSeassons = () => {
 							)}
 						</div>
 					</List.Item>
+					{seasson.promotion && (
+						<li className={styles.promotion_item}>
+							<div className={styles.container_message}>
+								⬆️ Promoted:
+								<ItemClub {...seasson.promotion.promoted} className={styles.winner} />
+							</div>
+							<div className={styles.container_message}>
+								⬇️ Relegated:
+								<ItemClub {...seasson.promotion.relegated} className={styles.winner} />
+							</div>
+						</li>
+					)}
+					</Fragment>
 				))}
 			</List.Container>
 		</div>

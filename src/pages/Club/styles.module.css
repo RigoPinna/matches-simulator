@@ -6,6 +6,11 @@
    align-items: center;
    padding-top:12px;
 }
+.club_image {
+   width: 64px;
+   height: 64px;
+   font-size: 20px;
+}
 .list {
     display: flex;
     padding: 27px 0;

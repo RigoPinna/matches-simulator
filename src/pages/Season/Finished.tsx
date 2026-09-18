@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useCurrentSeasonParams } from '../../hooks';
-import { MatchList } from '../../components/ui';
+import { ClubBadge, MatchList } from '../../components/ui';
 import ligeImg from '../../assets/champion.png';
 import supercupImg from '../../assets/supercup.png';
 import styles from './styles.module.css';
@@ -59,17 +59,17 @@ export const Finished = () => {
 							season?.fase?.final?.winners && season?.table[0].club.uuid !== season?.fase?.final?.winners[0].uuid ? (
 								<>
 									<div className={styles.champion_container}>
-										<img className={styles.champion_team} src={season?.table[0].club.image} />
+										<ClubBadge className={styles.champion_team} image={season?.table[0].club.image} name={season?.table[0].club.name || ''} color={season?.table[0].club.color} />
 										<img className={styles.trophy} src={ligeImg} />
 									</div>
 									<div className={styles.champion_container}>
-										<img className={styles.champion_team} src={season?.fase?.final?.winners[0].image} />
+										<ClubBadge className={styles.champion_team} image={season?.fase?.final?.winners[0].image} name={season?.fase?.final?.winners[0].name || ''} color={season?.fase?.final?.winners[0].color} />
 										<img className={styles.trophy} src={supercupImg} />
 									</div>
 								</>
 							) : (
 								<div className={styles.champion_container}>
-									<img className={styles.champion_team} src={season?.table[0].club.image} />
+									<ClubBadge className={styles.champion_team} image={season?.table[0].club.image} name={season?.table[0].club.name || ''} color={season?.table[0].club.color} />
 									<img className={styles.trophy} src={ligeImg} />
 									<img className={`${styles.trophy} ${styles.trophy_super_cup}`} src={supercupImg} />
 								</div>

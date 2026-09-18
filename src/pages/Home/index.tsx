@@ -1,9 +1,9 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as getUuid } from 'uuid';
-import { SeassonContext } from '../../store';
+import { SeassonContext, TLeague } from '../../store';
 import { Main } from '../../components/layouts';
-import { Header, Button, ListSeassons, List } from '../../components/ui';
+import { Header, Button, ListSeassons, List, LeagueTabs } from '../../components/ui';
 import { Ball, GameFilled, GameOutlined, Trophy } from '../../components/icons';
 
 import styles from './styles.module.css';
@@ -11,6 +11,7 @@ import styles from './styles.module.css';
 export const HomaPage = () => {
 	const { seasons, dispatch } = useContext(SeassonContext);
 	const navigate = useNavigate();
+	const [league, setLeague] = useState<TLeague>('PRIMERA');
 
 	const handleCreateNewSeason = () => {
 		const uuid = getUuid();
@@ -61,7 +62,8 @@ export const HomaPage = () => {
 								</div>
 							</List.Item>
 						</List.Container>
-						<ListSeassons />
+						<LeagueTabs value={league} onChange={setLeague} />
+						<ListSeassons league={league} />
 					</>
 				)}
 			</Main>

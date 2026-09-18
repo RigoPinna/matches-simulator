@@ -1,3 +1,4 @@
+export * from './aggregateTable';
 export * from './getJourneys';
 export * from './getRandomScore';
 export * from './getWinner';

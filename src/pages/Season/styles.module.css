@@ -13,6 +13,37 @@
 	padding: 16px;
 	overflow-x: auto;
 }
+.table_tabs {
+	display: flex;
+	width: 100%;
+	gap: 8px;
+	padding: 4px;
+	background: var(--dark-500);
+	border-radius: 14px;
+	margin-bottom: 8px;
+}
+.table_tab {
+	flex: 1;
+	padding: 8px;
+	border: none;
+	border-radius: 10px;
+	background: transparent;
+	color: var(--grey-400);
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	white-space: nowrap;
+}
+.table_tab_active {
+	background: var(--primary);
+	color: var(--white);
+}
+.table_hint {
+	font-size: 12px;
+	color: var(--grey-400);
+	text-align: center;
+	margin-bottom: 8px;
+}
 .status_container h2,
 .status_container p {
 	text-align: center;

@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "../../components/icons";
 import { Main } from "../../components/layouts";
-import { Button, Header, LastMatches, MatchList } from "../../components/ui";
+import { Button, ClubBadge, Header, LastMatches, MatchList } from "../../components/ui";
 import { useContext } from "react";
 import { SeassonContext } from "../../store";
 import lige from '../../assets/champion.png'
@@ -11,13 +11,17 @@ import { useStatistics } from "../../hooks/";
 export const ClubPage = () => {
     const navigate = useNavigate();
     const { cid } = useParams();
-    const { clubs, seasons } = useContext(SeassonContext);
+    const { clubs, plateClubs, seasons } = useContext(SeassonContext);
     const [statistics, lastMatches] = useStatistics(cid || '');
-    const club = clubs.find(({ uuid }) => uuid === cid);
+    const club = clubs.find(({ uuid }) => uuid === cid) || plateClubs.find(({ uuid }) => uuid === cid);
 
     if (!club) {
         return <div>Club not found</div>;
     }
+    const clubSeasonsHistory = seasons
+        .filter(season => season.table.some(item => item.club.uuid === cid))
+        .sort((a, b) => a.number - b.number);
+    const lastClubSeason = clubSeasonsHistory[clubSeasonsHistory.length - 1];
     return (
         <>
             <Header>
@@ -30,12 +34,17 @@ export const ClubPage = () => {
             </Header>
             <Main>
                 <div className={styles.header}>
-                    <img src={club?.image} alt={club?.name} />
+                    <ClubBadge
+                        className={styles.club_image}
+                        image={club?.image}
+                        name={club?.name || ''}
+                        color={club?.color}
+                    />
                     <h2>{club?.name}</h2>
                     <LastMatches
                         showtitles
                         clubId={club.uuid}
-                        seasonId={seasons[seasons.length - 1]?.uuid || ''} />
+                        seasonId={lastClubSeason?.uuid || ''} />
 
                 </div>
                 <ul className={styles.list}>
