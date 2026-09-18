@@ -8,6 +8,14 @@ import monterrey from '../../assets/monterrey-logo.png';
 import santos from '../../assets/santos-logo.png';
 import pumas from '../../assets/pumas-logo.png';
 import toluca from '../../assets/toluca-logo.png';
+import atlas from '../../assets/atlas.png';
+import dorados from '../../assets/dorados.png';
+import leon from '../../assets/leon.png';
+import morelia from '../../assets/morelia.png';
+import correcaminos from '../../assets/correcaminos.png';
+import tampico from '../../assets/Tampico.png';
+import pachuca from '../../assets/pachuca.png';
+import tijuana from '../../assets/tijuana.png';
 export interface IClub {
 	uuid: string;
 	image?: string;
@@ -144,62 +152,70 @@ const clubs: IClub[] = [
 	},
 ];
 
-// Plate Ligue: segunda división. Sin logos propios todavía, por eso no
-// traen `image` — ItemClub cae a una insignia con iniciales + color.
+// Plate Ligue: segunda división. Colores tomados del color dominante de
+// cada escudo (muestreo de píxeles, ignorando fondo blanco/negro).
 const plateClubs: IClub[] = [
 	{
 		uuid: 'plate-1',
-		name: 'Atlante',
-		color: '#0b3d91',
+		name: 'Atlas',
+		image: atlas,
+		color: '#E2001A',
 		plateChampions: 0,
 		plateSupercups: 0,
 	},
 	{
 		uuid: 'plate-2',
 		name: 'Dorados de Sinaloa',
-		color: '#c9a227',
+		image: dorados,
+		color: '#C69214',
 		plateChampions: 0,
 		plateSupercups: 0,
 	},
 	{
 		uuid: 'plate-3',
-		name: 'Alebrijes de Oaxaca',
-		color: '#1e7a34',
+		name: 'León',
+		image: leon,
+		color: '#00754A',
 		plateChampions: 0,
 		plateSupercups: 0,
 	},
 	{
 		uuid: 'plate-4',
-		name: 'Leones Negros UdeG',
-		color: '#222222',
+		name: 'Atlético Morelia',
+		image: morelia,
+		color: '#D9272C',
 		plateChampions: 0,
 		plateSupercups: 0,
 	},
 	{
 		uuid: 'plate-5',
 		name: 'Correcaminos UAT',
-		color: '#e06c00',
+		image: correcaminos,
+		color: '#ffa600',
 		plateChampions: 0,
 		plateSupercups: 0,
 	},
 	{
 		uuid: 'plate-6',
 		name: 'Tampico Madero',
-		color: '#3aa8d8',
+		image: tampico,
+		color: '#0090D0',
 		plateChampions: 0,
 		plateSupercups: 0,
 	},
 	{
 		uuid: 'plate-7',
-		name: 'Cancún FC',
-		color: '#00a3a3',
+		name: 'Pachuca',
+		image: pachuca,
+		color: '#1E3A8A',
 		plateChampions: 0,
 		plateSupercups: 0,
 	},
 	{
 		uuid: 'plate-8',
-		name: 'Mineros de Zacatecas',
-		color: '#2e7d32',
+		name: 'Tijuana',
+		image: tijuana,
+		color: '#C8102E',
 		plateChampions: 0,
 		plateSupercups: 0,
 	},
