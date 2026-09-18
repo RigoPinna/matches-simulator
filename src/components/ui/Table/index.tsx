@@ -25,7 +25,7 @@ export const Table = ({ table }: ITable) => {
 			</thead>
 			<tbody className={styles.body}>
 				{table.map((team, index) => (
-					<ItemTable key={`table-item-${team.club.image}`} positions={index + 1} {...team} />
+					<ItemTable key={`table-item-${team.club.uuid}`} positions={index + 1} {...team} />
 				))}
 			</tbody>
 		</table>

@@ -1,0 +1,13 @@
+.image {
+	object-fit: contain;
+}
+.badge {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-weight: 700;
+	border-radius: 50%;
+	aspect-ratio: 1 / 1;
+	flex-shrink: 0;
+}

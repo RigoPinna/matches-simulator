@@ -6,8 +6,9 @@ interface IItemTable {
 	positions: number;
 	club: {
 		uuid: string;
-		image: string;
+		image?: string;
 		name: string;
+		color?: string;
 	};
 	mg: number;
 	mw: number;
@@ -28,6 +29,7 @@ export const ItemTable = (props: IItemTable) => {
 					className={styles.table_head_club_item}
 					image={props.club.image}
 					name={props.club.name}
+					color={props.club.color}
 				/>
 			</td>
 			<td className={styles.table_socre_item}>{props.mg}</td>

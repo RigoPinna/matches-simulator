@@ -1,8 +1,8 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IClub } from '../../store';
+import { IClub, SeassonContext, TLeague } from '../../store';
 import { Main } from '../../components/layouts';
-import { Button, Header, Input, ItemClub, List, Modal } from '../../components/ui';
+import { Button, Header, Input, ItemClub, LeagueTabs, List, Modal } from '../../components/ui';
 import { ArrowLeft, Champion } from '../../components/icons';
 
 import styles from './styles.module.css';
@@ -19,7 +19,9 @@ type IClubSelected = {
 export const WinnersPage = () => {
 	const navigate = useNavigate();
 	const { isOpen, onOpen, onClose } = useModal();
+	const { clubs, plateClubs } = useContext(SeassonContext);
 
+	const [league, setLeague] = useState<TLeague>('PRIMERA');
 	const [clubSelected, setClubSelected] = useState<IClubSelected>();
 	const [values, setValues] = useState({
 		champions: clubSelected?.club.champions || 0,
@@ -29,13 +31,17 @@ export const WinnersPage = () => {
 	const [winnersSupercup, setWinnersSupercup] = useState<Winner[]>([]);
 
 	useEffect(() => {
-		const clubs = JSON.parse(localStorage.getItem('clubs') || '[]') as IClub[];
+		const clubsByLeague = league === 'PRIMERA' ? clubs : plateClubs;
+		const championsField = league === 'PRIMERA' ? 'champions' : 'plateChampions';
+		const supercupsField = league === 'PRIMERA' ? 'supercups' : 'plateSupercups';
 
-		if (clubs.length > 0) {
-			setWinnersLeague(clubs.map(item => ({ club: item, champions: item.champions || 0 })));
-			setWinnersSupercup(clubs.map(item => ({ club: item, champions: item.supercups || 0 })));
-		}
-	}, []);
+		setWinnersLeague(
+			clubsByLeague.map(item => ({ club: item, champions: item[championsField] || 0 })),
+		);
+		setWinnersSupercup(
+			clubsByLeague.map(item => ({ club: item, champions: item[supercupsField] || 0 })),
+		);
+	}, [clubs, plateClubs, league]);
 	const setThropies = (numberOfThropy: number, type: 'league' | 'supercup') => {
 		const thropies: ReactElement[] = [];
 
@@ -50,17 +56,20 @@ export const WinnersPage = () => {
 		setClubSelected({ club: winner, type });
 	};
 	const onUpdateClub = () => {
-		const clubs = JSON.parse(localStorage.getItem('clubs') || '[]') as IClub[];
+		const storageKey = league === 'PRIMERA' ? 'clubs' : 'plateClubs';
+		const championsField = league === 'PRIMERA' ? 'champions' : 'plateChampions';
+		const supercupsField = league === 'PRIMERA' ? 'supercups' : 'plateSupercups';
+		const clubsSaved = JSON.parse(localStorage.getItem(storageKey) || '[]') as IClub[];
 		if (clubSelected) {
 			localStorage.setItem(
-				'clubs',
+				storageKey,
 				JSON.stringify(
-					clubs.map(item =>
+					clubsSaved.map(item =>
 						item.uuid === clubSelected.club.uuid
 							? {
 									...item,
-									champions: values.champions,
-									supercups: values.supercups || item.supercups,
+									[championsField]: values.champions,
+									[supercupsField]: values.supercups || item[supercupsField],
 								}
 							: item,
 					),
@@ -77,6 +86,7 @@ export const WinnersPage = () => {
 				<h1>Winners</h1>
 			</Header>
 			<Main>
+				<LeagueTabs value={league} onChange={setLeague} />
 				<List.Container className={styles.list} title='League:'>
 					{winnersLeague
 						.sort((a, b) => b.champions - a.champions)
