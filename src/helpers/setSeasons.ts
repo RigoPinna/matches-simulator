@@ -1,4 +1,5 @@
 import { TSeason } from '../store';
+import { safeSetItem } from './safeStorage';
 
 export const setSeasons = (currentSeason: TSeason, seasons: TSeason[]) => {
 	return setSeasonsBatch([currentSeason], seasons);
@@ -12,7 +13,7 @@ export const setSeasonsBatch = (updatedSeasons: TSeason[], seasons: TSeason[]) =
 	const byUuid = new Map(updatedSeasons.map(season => [season.uuid, season]));
 	const newSeasons = seasons.map(season => byUuid.get(season.uuid) || season);
 
-	localStorage.setItem('seasons', JSON.stringify(newSeasons));
+	safeSetItem('seasons', JSON.stringify(newSeasons));
 
 	return newSeasons;
 };
