@@ -19,6 +19,10 @@ import {
 	isMyClub,
 	orderMyTeam,
 	orderTable,
+	safeSetItem,
+	buildImageLookup,
+	sanitizeClubImages,
+	sanitizeSeasonImages,
 	setSeasonsBatch,
 } from '../../helpers';
 import { getRandomScore } from '../../helpers/getRandomScore';
@@ -314,18 +318,36 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 	switch (action.type) {
 		case '[SEASSON] - SET SEASSONS': {
 			const clubsSaved = localStorage.getItem('clubs');
-			const clubs = clubsSaved ? JSON.parse(clubsSaved) : state.clubs;
+			const loadedClubs = clubsSaved ? JSON.parse(clubsSaved) : state.clubs;
 			const plateClubsSaved = localStorage.getItem('plateClubs');
-			const plateClubs = plateClubsSaved ? JSON.parse(plateClubsSaved) : state.plateClubs;
-			const seasons = (action.payload as TSeason[]).map(season => ({
+			const loadedPlateClubs = plateClubsSaved ? JSON.parse(plateClubsSaved) : state.plateClubs;
+
+			// Always built from the hardcoded module defaults, never from what's
+			// saved — those defaults are the only thing guaranteed to reflect
+			// the current build's (lightweight, external-file) image paths.
+			const imageByUuid = buildImageLookup(globalState.clubs, globalState.plateClubs);
+
+			const sanitizedClubs = sanitizeClubImages(loadedClubs, imageByUuid);
+			if (sanitizedClubs.changed) safeSetItem('clubs', JSON.stringify(sanitizedClubs.clubs));
+			const sanitizedPlateClubs = sanitizeClubImages(loadedPlateClubs, imageByUuid);
+			if (sanitizedPlateClubs.changed) {
+				safeSetItem('plateClubs', JSON.stringify(sanitizedPlateClubs.clubs));
+			}
+
+			const loadedSeasons = (action.payload as TSeason[]).map(season => ({
 				...season,
 				league: season.league ?? 'PRIMERA',
 			}));
+			const sanitizedSeasons = sanitizeSeasonImages(loadedSeasons, imageByUuid);
+			if (sanitizedSeasons.changed) {
+				safeSetItem('seasons', JSON.stringify(sanitizedSeasons.seasons));
+			}
+
 			return {
 				...state,
-				clubs,
-				plateClubs,
-				seasons,
+				clubs: sanitizedClubs.clubs,
+				plateClubs: sanitizedPlateClubs.clubs,
+				seasons: sanitizedSeasons.seasons,
 			};
 		}
 		case '[SEASSON] - NEW SEASSON': {
@@ -403,7 +425,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				isCurrent: false,
 			}));
 			const seasons = [...oldSeassons, newPrimeraSeason, newPlateSeason];
-			localStorage.setItem('seasons', JSON.stringify(seasons));
+			safeSetItem('seasons', JSON.stringify(seasons));
 			return { ...state, seasons };
 		}
 		case '[SEASSON-REGULAR] - ADD MATCH SCORE': {
@@ -460,8 +482,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				applyTrophy(pairSynced);
 			}
 
-			if (clubs !== state.clubs) localStorage.setItem('clubs', JSON.stringify(clubs));
-			if (plateClubs !== state.plateClubs) localStorage.setItem('plateClubs', JSON.stringify(plateClubs));
+			if (clubs !== state.clubs) safeSetItem('clubs', JSON.stringify(clubs));
+			if (plateClubs !== state.plateClubs) safeSetItem('plateClubs', JSON.stringify(plateClubs));
 
 			return {
 				...state,
@@ -598,8 +620,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 					seasonFinished = { ...seasonFinished, promotion };
 					pairFinished = { ...pairFinished, promotion };
 				}
-				if (clubs !== state.clubs) localStorage.setItem('clubs', JSON.stringify(clubs));
-				if (plateClubs !== state.plateClubs) localStorage.setItem('plateClubs', JSON.stringify(plateClubs));
+				if (clubs !== state.clubs) safeSetItem('clubs', JSON.stringify(clubs));
+				if (plateClubs !== state.plateClubs) safeSetItem('plateClubs', JSON.stringify(plateClubs));
 			}
 
 			const updates: TSeason[] = [seasonFinished];

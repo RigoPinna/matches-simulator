@@ -1,4 +1,6 @@
 export * from './aggregateTable';
+export * from './safeStorage';
+export * from './sanitizeSeasonImages';
 export * from './getJourneys';
 export * from './getRandomScore';
 export * from './getWinner';
