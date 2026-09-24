@@ -181,7 +181,7 @@ const plateClubs: IClub[] = [
 	},
 	{
 		uuid: 'plate-4',
-		name: 'Atlético Morelia',
+		name: 'Morelia',
 		image: morelia,
 		color: '#D9272C',
 		plateChampions: 0,
@@ -189,7 +189,7 @@ const plateClubs: IClub[] = [
 	},
 	{
 		uuid: 'plate-5',
-		name: 'Correcaminos UAT',
+		name: 'Correcaminos',
 		image: correcaminos,
 		color: '#ffa600',
 		plateChampions: 0,
@@ -197,7 +197,7 @@ const plateClubs: IClub[] = [
 	},
 	{
 		uuid: 'plate-6',
-		name: 'Tampico Madero',
+		name: 'Jaiva Brava',
 		image: tampico,
 		color: '#0090D0',
 		plateChampions: 0,

@@ -7,6 +7,7 @@ import { ArrowLeft, Champion } from '../../components/icons';
 
 import styles from './styles.module.css';
 import { useModal } from '../../hooks';
+import { safeSetItem } from '../../helpers';
 
 type Winner = {
 	club: IClub;
@@ -61,7 +62,7 @@ export const WinnersPage = () => {
 		const supercupsField = league === 'PRIMERA' ? 'supercups' : 'plateSupercups';
 		const clubsSaved = JSON.parse(localStorage.getItem(storageKey) || '[]') as IClub[];
 		if (clubSelected) {
-			localStorage.setItem(
+			safeSetItem(
 				storageKey,
 				JSON.stringify(
 					clubsSaved.map(item =>
