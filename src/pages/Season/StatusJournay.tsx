@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { Button, MatchList } from '../../components/ui';
 import { useCurrentSeasonParams } from '../../hooks';
-import { SeassonContext } from '../../store';
+import { SeassonContext, isReadOnlyLeague } from '../../store';
 import styles from './styles.module.css';
 import confetti from 'canvas-confetti';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
@@ -9,10 +9,11 @@ export const StatusJourney = () => {
 	const { myClub, dispatch } = useContext(SeassonContext);
 	const { season } = useCurrentSeasonParams();
 	const regular = season?.fase.regular;
+	const readOnly = season ? isReadOnlyLeague(season.league) : false;
 	useEffect(() => {
 		if (season) {
 			const position = season.table.findIndex(item => item.club.uuid === myClub?.uuid) + 1;
-			if (regular?.status === 'FINISHED' && position <= 4) {
+			if (!readOnly && regular?.status === 'FINISHED' && position > 0 && position <= 4) {
 				confetti({
 					particleCount: 100,
 					spread: 70,
@@ -62,14 +63,20 @@ export const StatusJourney = () => {
 				<>
 					<div className={styles.status_container}>
 						<h2>The regular season has ended</h2>
-						{position <= 4 ? (
-							<p>Congratulations! your team is in the Supercup 🎉</p>
+						{readOnly ? (
+							<p>The semifinals start when your league continues</p>
 						) : (
-							<p>Sorry! Your team will not be in the SuperCup</p>
+							<>
+								{position <= 4 ? (
+									<p>Congratulations! your team is in the Supercup 🎉</p>
+								) : (
+									<p>Sorry! Your team will not be in the SuperCup</p>
+								)}
+								<Button.Primary className={styles.button} onClick={goToSemifinals}>
+									Continue
+								</Button.Primary>
+							</>
 						)}
-						<Button.Primary className={styles.button} onClick={goToSemifinals}>
-							Continue
-						</Button.Primary>
 					</div>
 					{regular.matches.matches.map((journey, i) => (
 						<MatchList
@@ -82,14 +89,20 @@ export const StatusJourney = () => {
 					))}
 					<div className={styles.status_container}>
 						<h2>The regular season has ended</h2>
-						{position <= 4 ? (
-							<p>Congratulations! your team is in the Supercup 🎉</p>
+						{readOnly ? (
+							<p>The semifinals start when your league continues</p>
 						) : (
-							<p>Sorry! Your team will not be in the SuperCup</p>
+							<>
+								{position <= 4 ? (
+									<p>Congratulations! your team is in the Supercup 🎉</p>
+								) : (
+									<p>Sorry! Your team will not be in the SuperCup</p>
+								)}
+								<Button.Primary className={styles.button} onClick={goToSemifinals}>
+									Continue
+								</Button.Primary>
+							</>
 						)}
-						<Button.Primary className={styles.button} onClick={goToSemifinals}>
-							Continue
-						</Button.Primary>
 					</div>
 				</>
 			);

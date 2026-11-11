@@ -1,7 +1,7 @@
 import Button from '../Button';
 import { Fire, Loader } from '../../icons';
 import styles from './styles.module.css';
-import { SeassonContext, TJourney } from '../../../store';
+import { SeassonContext, TJourney, isReadOnlyLeague } from '../../../store';
 import { ItemMatch } from './ItemMatch';
 import { useContext, useState } from 'react';
 import { TType } from '../../../store/Seasson/seassonReducer';
@@ -23,6 +23,8 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 	const { myClub, dispatch } = useContext(SeassonContext);
 	const { season } = useCurrentSeasonParams();
 	const [isLoading, setIsLoading] = useState(false);
+	// International leagues only advance together with the user's league.
+	const readOnly = season ? isReadOnlyLeague(season.league) : false;
 	const simulateMatches = () => {
 		setIsLoading(true);
 		const id = setTimeout(() => {
@@ -55,7 +57,7 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 					<>
 						{!isLoading ? (
 							<>
-								{showButton() && (
+								{showButton() && !readOnly && (
 									<Button.Primary onClick={simulateMatches} className={styles.btn_simulate}>
 										<Fire />
 										Simulate
