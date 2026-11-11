@@ -6,14 +6,17 @@ import { useContext } from "react";
 import { SeassonContext } from "../../store";
 import lige from '../../assets/champion.png'
 import supercup from '../../assets/supercup.png'
+import worldCupTrophy from '../../assets/wp-thropy.png'
 import styles from "./styles.module.css";
 import { useStatistics } from "../../hooks/";
 export const ClubPage = () => {
     const navigate = useNavigate();
     const { cid } = useParams();
-    const { clubs, plateClubs, seasons } = useContext(SeassonContext);
+    const { clubs, plateClubs, intlClubs, seasons } = useContext(SeassonContext);
     const [statistics, lastMatches] = useStatistics(cid || '');
-    const club = clubs.find(({ uuid }) => uuid === cid) || plateClubs.find(({ uuid }) => uuid === cid);
+    const club = [...clubs, ...plateClubs, ...Object.values(intlClubs).flat()].find(
+        ({ uuid }) => uuid === cid,
+    );
 
     if (!club) {
         return <div>Club not found</div>;
@@ -58,6 +61,13 @@ export const ClubPage = () => {
                         <h3 className={styles.title}>Supercups</h3>
                         <img src={supercup} alt="champion" className={styles.champ} />
                     </li>
+                    {!!club.worldCups && (
+                        <li className={styles.list_item}>
+                            <p className={styles.number_trophy}>{club.worldCups}</p>
+                            <h3 className={styles.title}>World Cups</h3>
+                            <img src={worldCupTrophy} alt="world cup" className={`${styles.champ} ${styles.champ_w}`} />
+                        </li>
+                    )}
                     <li className={styles.list_item}>
                         <p className={styles.number_trophy}>{statistics.winPercentage.toFixed(1)}%</p>
                         <div className={styles.statistic_wrapper}>

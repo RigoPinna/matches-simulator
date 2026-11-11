@@ -38,6 +38,11 @@
 	width: 57px;
 	z-index: 1;
 }
+.champ_w {
+	right: -18px;
+	top: 27px;
+	scale: 1.5;
+}
 .number_trophy {
 	font-size: 28px;
 	font-weight: 700;
