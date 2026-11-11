@@ -1,4 +1,4 @@
-import { IClub, ITeamMatch, TFase, TSeason } from '../store';
+import { IClub, ITeamMatch, TFase, TSeason, TWorldCup } from '../store';
 
 const BASE64_IMAGE_PREFIX = 'data:image';
 
@@ -6,17 +6,17 @@ export type TImageByUuid = Map<string, string | undefined>;
 
 /**
  * The lookup should always be built from the hardcoded, module-level club
- * arrays (`globalState.clubs` / `globalState.plateClubs`), never from
- * whatever is in localStorage — those defaults always reflect the current
- * build's (clean, external-file) image paths, while the saved roster can
- * itself still be carrying an old base64 blob from before this existed.
- * Both leagues' defaults are combined because a club can have moved
- * divisions since it was first created (promotion/relegation), so its
- * current entry might only exist in the "other" league's default array.
+ * arrays (`globalState.clubs` / `globalState.plateClubs` / the international
+ * defaults), never from whatever is in localStorage — those defaults always
+ * reflect the current build's (clean, external-file) image paths, while the
+ * saved roster can itself still be carrying an old base64 blob from before
+ * this existed. Every league's defaults are combined because a club can
+ * have moved divisions since it was first created (promotion/relegation),
+ * so its current entry might only exist in the "other" league's array.
  */
-export const buildImageLookup = (clubs: IClub[], plateClubs: IClub[]): TImageByUuid => {
+export const buildImageLookup = (...rosters: IClub[][]): TImageByUuid => {
 	const map = new Map<string, string | undefined>();
-	for (const club of [...clubs, ...plateClubs]) {
+	for (const club of rosters.flat()) {
 		map.set(club.uuid, club.image);
 	}
 	return map;
@@ -26,9 +26,16 @@ function cleanSnapshot<T extends { uuid: string; image?: string }>(
 	snapshot: T,
 	imageByUuid: TImageByUuid,
 ): T {
-	if (!snapshot.image || !snapshot.image.startsWith(BASE64_IMAGE_PREFIX)) return snapshot;
 	if (!imageByUuid.has(snapshot.uuid)) return snapshot;
-	return { ...snapshot, image: imageByUuid.get(snapshot.uuid) };
+	const current = imageByUuid.get(snapshot.uuid);
+	// The club has a logo in this build and the snapshot is missing it or
+	// points elsewhere (a logo added later, e.g. international clubs, or an
+	// old base64 blob): use the current one.
+	if (current && snapshot.image !== current) return { ...snapshot, image: current };
+	if (!current && snapshot.image?.startsWith(BASE64_IMAGE_PREFIX)) {
+		return { ...snapshot, image: current };
+	}
+	return snapshot;
 }
 
 function cleanFase<F extends TFase & { winners?: ITeamMatch[] }>(
@@ -59,8 +66,9 @@ function cleanFase<F extends TFase & { winners?: ITeamMatch[] }>(
  * inlined as base64) still carry a full base64 copy of the image on every
  * match and table row — easily hundreds of KB duplicated per season, which
  * on its own can push localStorage past quota. This swaps any leftover
- * base64 blob for the club's current lightweight image path, so old saves
- * shrink back down automatically the next time they're loaded.
+ * base64 blob (or missing logo) for the club's current lightweight image
+ * path, so old saves shrink back down / pick up new logos automatically
+ * the next time they're loaded.
  */
 export const sanitizeSeasonImages = (
 	seasons: TSeason[],
@@ -103,4 +111,47 @@ export const sanitizeClubImages = (
 		return next;
 	});
 	return changed ? { clubs: cleaned, changed } : { clubs, changed };
+};
+
+/**
+ * Walks any JSON-like value and refreshes every club snapshot in it (any
+ * object with a string uuid plus name and color). Used for World Cups,
+ * whose club snapshots live in several differently-shaped places.
+ */
+function cleanDeep<T>(value: T, imageByUuid: TImageByUuid, onChange: () => void): T {
+	if (Array.isArray(value)) {
+		let arrayChanged = false;
+		const next = value.map(item => {
+			const cleaned = cleanDeep(item, imageByUuid, onChange);
+			if (cleaned !== item) arrayChanged = true;
+			return cleaned;
+		});
+		return (arrayChanged ? next : value) as T;
+	}
+	if (!value || typeof value !== 'object') return value;
+	const record = value as Record<string, unknown>;
+	let next: Record<string, unknown> = record;
+	if (typeof record.uuid === 'string' && 'name' in record && 'color' in record) {
+		next = cleanSnapshot(record as { uuid: string; image?: string }, imageByUuid);
+		if (next !== record) onChange();
+	}
+	for (const [key, child] of Object.entries(next)) {
+		const cleaned = cleanDeep(child, imageByUuid, onChange);
+		if (cleaned !== child) {
+			if (next === record) next = { ...record };
+			next[key] = cleaned;
+		}
+	}
+	return next as T;
+}
+
+export const sanitizeWorldCupImages = (
+	worldCups: TWorldCup[],
+	imageByUuid: TImageByUuid,
+): { worldCups: TWorldCup[]; changed: boolean } => {
+	let changed = false;
+	const cleaned = cleanDeep(worldCups, imageByUuid, () => {
+		changed = true;
+	});
+	return { worldCups: cleaned, changed };
 };

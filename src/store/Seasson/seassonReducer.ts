@@ -5,16 +5,25 @@ import {
 	ITeamMatch,
 	TFase,
 	TJourney,
-	TLeague,
 	TMatches,
 	TSeason,
 	TState,
 	TStatusFase,
+	TWorldCup,
 	globalState,
 } from './SeassonContext';
 import {
+	INTL_LEAGUES,
+	SEASONS_PER_WORLD_CUP,
+	TIntlLeague,
+	TLeague,
+	intlClubsDefaults,
+} from './leagues';
+import {
 	aggregateTable,
+	createWorldCup,
 	getJourneys,
+	getUnplayedWorldCupCycle,
 	getWinner,
 	isMyClub,
 	orderMyTeam,
@@ -23,9 +32,15 @@ import {
 	buildImageLookup,
 	sanitizeClubImages,
 	sanitizeSeasonImages,
+	sanitizeWorldCupImages,
 	setSeasonsBatch,
 } from '../../helpers';
 import { getRandomScore } from '../../helpers/getRandomScore';
+import {
+	TWorldCupActionType,
+	getCurrentWorldCup,
+	worldCupReducer,
+} from '../WorldCup/worldCupReducer';
 
 export type TType =
 	| '[SEASSON] - SET SEASSONS'
@@ -39,7 +54,8 @@ export type TType =
 	| '[SEASSON-FINAL] - ADD MATCH SCORE'
 	| '[SEASSON] - FINISHED SEASON'
 	| '[SEASSON] - ORDER TABLE'
-	| '[SEASSON] - ADDED MY SCORE';
+	| '[SEASSON] - ADDED MY SCORE'
+	| TWorldCupActionType;
 
 export type TAction = {
 	type: TType;
@@ -64,9 +80,14 @@ export type TSeasonReducer = (state: TState, action: TAction) => TState;
 // de los partidos en vez de dejar uno pendiente de marcador manual.
 const NO_CLUB: IClub = { uuid: '__shadow__', name: 'Shadow', color: '#000000' };
 
-const getPairSeason = (season: TSeason, seasons: TSeason[]): TSeason | undefined => {
-	if (!season.pairId) return undefined;
-	return seasons.find(s => s.pairId === season.pairId && s.uuid !== season.uuid);
+/**
+ * Every season created in the same "New season" click shares a pairId: the
+ * user's own league plus all the leagues that are simulated in the
+ * background (Plate Ligue / Primera and the three international leagues).
+ */
+const getPairSeasons = (season: TSeason, seasons: TSeason[]): TSeason[] => {
+	if (!season.pairId) return [];
+	return seasons.filter(s => s.pairId === season.pairId && s.uuid !== season.uuid);
 };
 
 const getNextJourney = (fase: TFase): TJourney | undefined => {
@@ -133,24 +154,73 @@ const syncShadowFase = (
 };
 
 type TTrophyField = 'champions' | 'supercups' | 'plateChampions' | 'plateSupercups';
+type TRosters = Pick<TState, 'clubs' | 'plateClubs' | 'intlClubs'>;
+
+const pickRosters = ({ clubs, plateClubs, intlClubs }: TState): TRosters => ({
+	clubs,
+	plateClubs,
+	intlClubs,
+});
 
 const bumpTrophy = (
-	clubs: IClub[],
-	plateClubs: IClub[],
+	rosters: TRosters,
 	league: TLeague,
 	winnerUuid: string | undefined,
 	field: 'champions' | 'supercups',
-): { clubs: IClub[]; plateClubs: IClub[] } => {
-	if (!winnerUuid) return { clubs, plateClubs };
-	const targetField: TTrophyField =
-		league === 'PRIMERA' ? field : (`plate${field[0].toUpperCase()}${field.slice(1)}` as TTrophyField);
-	const apply = (arr: IClub[]) =>
+): TRosters => {
+	if (!winnerUuid) return rosters;
+	const apply = (arr: IClub[], targetField: TTrophyField) =>
 		arr.map(club =>
 			club.uuid === winnerUuid ? { ...club, [targetField]: (club[targetField] || 0) + 1 } : club,
 		);
-	return league === 'PRIMERA'
-		? { clubs: apply(clubs), plateClubs }
-		: { clubs, plateClubs: apply(plateClubs) };
+	if (league === 'PRIMERA') return { ...rosters, clubs: apply(rosters.clubs, field) };
+	if (league === 'PLATE') {
+		const plateField = `plate${field[0].toUpperCase()}${field.slice(1)}` as TTrophyField;
+		return { ...rosters, plateClubs: apply(rosters.plateClubs, plateField) };
+	}
+	return {
+		...rosters,
+		intlClubs: { ...rosters.intlClubs, [league]: apply(rosters.intlClubs[league], field) },
+	};
+};
+
+const persistRosters = (next: TRosters, prev: TRosters) => {
+	if (next.clubs !== prev.clubs) safeSetItem('clubs', JSON.stringify(next.clubs));
+	if (next.plateClubs !== prev.plateClubs) safeSetItem('plateClubs', JSON.stringify(next.plateClubs));
+	if (next.intlClubs !== prev.intlClubs) safeSetItem('intlClubs', JSON.stringify(next.intlClubs));
+};
+
+/**
+ * The hardcoded defaults are the source of truth for which clubs play each
+ * international league and their name/color/logo; only the trophy counters
+ * come from what's saved.
+ */
+const loadIntlClubs = (): Record<TIntlLeague, IClub[]> => {
+	let saved: Partial<Record<TIntlLeague, IClub[]>> = {};
+	try {
+		saved = JSON.parse(localStorage.getItem('intlClubs') || '{}');
+	} catch {
+		saved = {};
+	}
+	return Object.fromEntries(
+		INTL_LEAGUES.map(league => [
+			league,
+			intlClubsDefaults[league].map(club => {
+				const savedClub = saved[league]?.find(c => c.uuid === club.uuid);
+				return savedClub
+					? { ...savedClub, name: club.name, color: club.color, image: club.image }
+					: club;
+			}),
+		]),
+	) as Record<TIntlLeague, IClub[]>;
+};
+
+const loadWorldCups = (): TWorldCup[] => {
+	try {
+		return JSON.parse(localStorage.getItem('worldCups') || '[]');
+	} catch {
+		return [];
+	}
 };
 
 const applyRegularJourney = (season: TSeason, matches: TJourney, myClub: IClub): TSeason => {
@@ -325,7 +395,11 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			// Always built from the hardcoded module defaults, never from what's
 			// saved — those defaults are the only thing guaranteed to reflect
 			// the current build's (lightweight, external-file) image paths.
-			const imageByUuid = buildImageLookup(globalState.clubs, globalState.plateClubs);
+			const imageByUuid = buildImageLookup(
+				globalState.clubs,
+				globalState.plateClubs,
+				...Object.values(intlClubsDefaults),
+			);
 
 			const sanitizedClubs = sanitizeClubImages(loadedClubs, imageByUuid);
 			if (sanitizedClubs.changed) safeSetItem('clubs', JSON.stringify(sanitizedClubs.clubs));
@@ -343,32 +417,46 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				safeSetItem('seasons', JSON.stringify(sanitizedSeasons.seasons));
 			}
 
+			const sanitizedWorldCups = sanitizeWorldCupImages(loadWorldCups(), imageByUuid);
+			if (sanitizedWorldCups.changed) {
+				safeSetItem('worldCups', JSON.stringify(sanitizedWorldCups.worldCups));
+			}
+
 			return {
 				...state,
 				clubs: sanitizedClubs.clubs,
 				plateClubs: sanitizedPlateClubs.clubs,
+				intlClubs: loadIntlClubs(),
 				seasons: sanitizedSeasons.seasons,
+				worldCups: sanitizedWorldCups.worldCups,
 			};
 		}
 		case '[SEASSON] - NEW SEASSON': {
+			// A World Cup is played between cycles: no new season until it's over.
+			if (
+				getCurrentWorldCup(state.worldCups) ||
+				getUnplayedWorldCupCycle(state.seasons, state.worldCups) !== undefined
+			) {
+				return state;
+			}
 			const requestedUuid = action.payload as string;
-			const myClubIsInPrimera = state.clubs.some(club => club.uuid === state.myClub?.uuid);
-			const primeraUuid = myClubIsInPrimera ? requestedUuid : getUuid();
-			const plateUuid = myClubIsInPrimera ? getUuid() : requestedUuid;
+			const myLeague: TLeague = state.plateClubs.some(club => club.uuid === state.myClub?.uuid)
+				? 'PLATE'
+				: 'PRIMERA';
 			const pairId = getUuid();
-			const primeraNumber = state.seasons.filter(s => s.league === 'PRIMERA').length + 1;
-			const plateNumber = state.seasons.filter(s => s.league === 'PLATE').length + 1;
+			// International leagues only exist from the first season created with
+			// this feature, so they define the World Cup cycle numbering.
+			const intlNumber = state.seasons.filter(s => s.league === INTL_LEAGUES[0]).length + 1;
+			const wcCycle = Math.ceil(intlNumber / SEASONS_PER_WORLD_CUP);
+			const wcCycleSeason = ((intlNumber - 1) % SEASONS_PER_WORLD_CUP) + 1;
 
-			const buildSeason = (
-				uuid: string,
-				league: TLeague,
-				number: number,
-				clubsForLeague: IClub[],
-			): TSeason => ({
-				uuid,
-				number,
+			const buildSeason = (league: TLeague, clubsForLeague: IClub[]): TSeason => ({
+				uuid: league === myLeague ? requestedUuid : getUuid(),
+				number: state.seasons.filter(s => s.league === league).length + 1,
 				league,
 				pairId,
+				wcCycle,
+				wcCycleSeason,
 				isCurrent: true,
 				fase: {
 					regular: {
@@ -417,14 +505,17 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				winner: null,
 			});
 
-			const newPrimeraSeason = buildSeason(primeraUuid, 'PRIMERA', primeraNumber, state.clubs);
-			const newPlateSeason = buildSeason(plateUuid, 'PLATE', plateNumber, state.plateClubs);
+			const newSeasons = [
+				buildSeason('PRIMERA', state.clubs),
+				buildSeason('PLATE', state.plateClubs),
+				...INTL_LEAGUES.map(league => buildSeason(league, state.intlClubs[league])),
+			];
 
 			const oldSeassons = state.seasons.map(seasson => ({
 				...seasson,
 				isCurrent: false,
 			}));
-			const seasons = [...oldSeassons, newPrimeraSeason, newPlateSeason];
+			const seasons = [...oldSeassons, ...newSeasons];
 			safeSetItem('seasons', JSON.stringify(seasons));
 			return { ...state, seasons };
 		}
@@ -434,8 +525,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const seasonUpdated = applyRegularJourney(season, matches, state.myClub as IClub);
 			const updates: TSeason[] = [seasonUpdated];
 
-			const pair = getPairSeason(season, state.seasons);
-			if (pair) {
+			for (const pair of getPairSeasons(season, state.seasons)) {
 				updates.push(syncShadowFase('regular', seasonUpdated, pair));
 			}
 
@@ -454,16 +544,15 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				fase: { ...target.fase, [type]: { ...target.fase[type], status } },
 			});
 
-			let clubs: IClub[] = state.clubs;
-			let plateClubs: IClub[] = state.plateClubs;
+			let rosters = pickRosters(state);
 
 			const applyTrophy = (target: TSeason) => {
-				if (type === 'regular' && status === 'BLOCKED') {
-					const winnerUuid = target.table[0]?.club.uuid;
-					({ clubs, plateClubs } = bumpTrophy(clubs, plateClubs, target.league, winnerUuid, 'champions'));
-				} else if (type === 'final' && status === 'BLOCKED') {
+				if (status !== 'BLOCKED') return;
+				if (type === 'regular') {
+					rosters = bumpTrophy(rosters, target.league, target.table[0]?.club.uuid, 'champions');
+				} else if (type === 'final') {
 					const winnerUuid = target.fase.final?.winners && target.fase.final.winners[0]?.uuid;
-					({ clubs, plateClubs } = bumpTrophy(clubs, plateClubs, target.league, winnerUuid, 'supercups'));
+					rosters = bumpTrophy(rosters, target.league, winnerUuid, 'supercups');
 				}
 			};
 
@@ -471,8 +560,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			applyTrophy(season);
 			const updates: TSeason[] = [updatedSeason];
 
-			const pair = getPairSeason(season, state.seasons);
-			if (pair && status === 'BLOCKED' && pair.fase[type].status !== 'BLOCKED') {
+			for (const pair of getPairSeasons(season, state.seasons)) {
+				if (status !== 'BLOCKED' || pair.fase[type].status === 'BLOCKED') continue;
 				// Belt-and-suspenders: make sure the shadow season's own copy of
 				// this phase is fully simulated before locking it, in case the
 				// incremental mirroring never got a trigger (e.g. myClub was the
@@ -482,13 +571,11 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 				applyTrophy(pairSynced);
 			}
 
-			if (clubs !== state.clubs) safeSetItem('clubs', JSON.stringify(clubs));
-			if (plateClubs !== state.plateClubs) safeSetItem('plateClubs', JSON.stringify(plateClubs));
+			persistRosters(rosters, state);
 
 			return {
 				...state,
-				clubs,
-				plateClubs,
+				...rosters,
 				seasons: setSeasonsBatch(updates, state.seasons),
 			};
 		}
@@ -498,9 +585,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const updatedSeason = buildSemifinalSeason(season);
 			const updates: TSeason[] = [updatedSeason];
 
-			const pair = getPairSeason(season, state.seasons);
-			if (pair && pair.fase.semifinal.status === 'BLOCKED') {
-				updates.push(buildSemifinalSeason(pair));
+			for (const pair of getPairSeasons(season, state.seasons)) {
+				if (pair.fase.semifinal.status === 'BLOCKED') updates.push(buildSemifinalSeason(pair));
 			}
 
 			return {
@@ -510,30 +596,17 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 		}
 		case '[SEASSON-SEMIFINALS] - ADD MATCH SCORE': {
 			const { uuid, matches } = action.payload as { uuid: string; matches: TJourney };
-			const {
-				season,
-				isFinished,
-				currentJourney,
-				matches: matchesUpdated,
-				winners,
-			} = updateMatchesNoDraw({
+			const result = updateMatchesNoDraw({
 				type: 'semifinal',
 				uuid,
 				matches,
 				seasons: state.seasons,
 				myClub: state.myClub as IClub,
 			});
-			const seasonUpdated = applyKnockoutResult('semifinal', {
-				season,
-				isFinished,
-				currentJourney,
-				matches: matchesUpdated,
-				winners,
-			});
+			const seasonUpdated = applyKnockoutResult('semifinal', result);
 			const updates: TSeason[] = [seasonUpdated];
 
-			const pair = getPairSeason(season, state.seasons);
-			if (pair) {
+			for (const pair of getPairSeasons(result.season, state.seasons)) {
 				updates.push(syncShadowFase('semifinal', seasonUpdated, pair));
 			}
 
@@ -548,9 +621,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			const updatedSeason = buildFinalSeason(season);
 			const updates: TSeason[] = [updatedSeason];
 
-			const pair = getPairSeason(season, state.seasons);
-			if (pair && pair.fase.final.status === 'BLOCKED') {
-				updates.push(buildFinalSeason(pair));
+			for (const pair of getPairSeasons(season, state.seasons)) {
+				if (pair.fase.final.status === 'BLOCKED') updates.push(buildFinalSeason(pair));
 			}
 
 			return {
@@ -560,30 +632,17 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 		}
 		case '[SEASSON-FINAL] - ADD MATCH SCORE': {
 			const { uuid, matches } = action.payload as { uuid: string; matches: TJourney };
-			const {
-				season,
-				isFinished,
-				currentJourney,
-				matches: matchesUpdated,
-				winners,
-			} = updateMatchesNoDraw({
+			const result = updateMatchesNoDraw({
 				type: 'final',
 				uuid,
 				matches,
 				seasons: state.seasons,
 				myClub: state.myClub as IClub,
 			});
-			const seasonUpdated = applyKnockoutResult('final', {
-				season,
-				isFinished,
-				currentJourney,
-				matches: matchesUpdated,
-				winners,
-			});
+			const seasonUpdated = applyKnockoutResult('final', result);
 			const updates: TSeason[] = [seasonUpdated];
 
-			const pair = getPairSeason(season, state.seasons);
-			if (pair) {
+			for (const pair of getPairSeasons(result.season, state.seasons)) {
 				updates.push(syncShadowFase('final', seasonUpdated, pair));
 			}
 
@@ -595,39 +654,50 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 		case '[SEASSON] - FINISHED SEASON': {
 			const { sid } = action.payload as { sid: string; winner: IClub };
 			const season = state.seasons.find(s => s.uuid === sid) as TSeason;
-			let seasonFinished = finishSeason(season);
-
-			const pair = getPairSeason(season, state.seasons);
-			let pairFinished: TSeason | undefined;
-			if (pair && pair.isCurrent) {
-				pairFinished = finishSeason(pair);
+			let updates: TSeason[] = [finishSeason(season)];
+			for (const pair of getPairSeasons(season, state.seasons)) {
+				if (pair.isCurrent) updates.push(finishSeason(pair));
 			}
 
-			let clubs = state.clubs;
-			let plateClubs = state.plateClubs;
+			let rosters = pickRosters(state);
 
-			if (pairFinished && seasonFinished.number % 2 === 0) {
+			const primera = updates.find(s => s.league === 'PRIMERA');
+			const plate = updates.find(s => s.league === 'PLATE');
+			if (primera && plate && primera.number % 2 === 0) {
 				const swap = checkPromotionRelegation(
-					seasonFinished.number,
+					primera.number,
 					state.seasons,
 					state.clubs,
 					state.plateClubs,
 				);
-				clubs = swap.clubs;
-				plateClubs = swap.plateClubs;
+				rosters = { ...rosters, clubs: swap.clubs, plateClubs: swap.plateClubs };
 				if (swap.promoted && swap.relegated) {
 					const promotion = { promoted: swap.promoted, relegated: swap.relegated };
-					seasonFinished = { ...seasonFinished, promotion };
-					pairFinished = { ...pairFinished, promotion };
+					updates = updates.map(s =>
+						s.league === 'PRIMERA' || s.league === 'PLATE' ? { ...s, promotion } : s,
+					);
 				}
-				if (clubs !== state.clubs) safeSetItem('clubs', JSON.stringify(clubs));
-				if (plateClubs !== state.plateClubs) safeSetItem('plateClubs', JSON.stringify(plateClubs));
+			}
+			persistRosters(rosters, state);
+
+			const seasons = setSeasonsBatch(updates, state.seasons);
+
+			// Last season of a World Cup cycle: qualify the top 4 of each league.
+			let worldCups = state.worldCups;
+			const cycle = season.wcCycle;
+			if (
+				cycle &&
+				season.wcCycleSeason === SEASONS_PER_WORLD_CUP &&
+				!worldCups.some(wc => wc.cycle === cycle)
+			) {
+				worldCups = [
+					...worldCups.map(wc => ({ ...wc, isCurrent: false })),
+					createWorldCup(seasons, cycle, worldCups.length + 1),
+				];
+				safeSetItem('worldCups', JSON.stringify(worldCups));
 			}
 
-			const updates: TSeason[] = [seasonFinished];
-			if (pairFinished) updates.push(pairFinished);
-
-			return { ...state, clubs, plateClubs, seasons: setSeasonsBatch(updates, state.seasons) };
+			return { ...state, ...rosters, seasons, worldCups };
 		}
 		case '[SEASSON] - ADDED MY SCORE': {
 			const { match: myMatch, sid, jid, type } = action.payload as TAddMyScore;
@@ -687,9 +757,8 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			// myClub's own match can be the only one left in a journey (e.g. a
 			// final where myClub is one of the two finalists, so there is no
 			// "other" match to trigger the Simulate mirroring above) — make sure
-			// the shadow season still catches up here too.
-			const pair = getPairSeason(season, state.seasons);
-			if (pair) {
+			// the shadow seasons still catch up here too.
+			for (const pair of getPairSeasons(season, state.seasons)) {
 				updates.push(syncShadowFase(type, seasonUpdated, pair));
 			}
 
@@ -699,7 +768,7 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			};
 		}
 		default:
-			return state;
+			return worldCupReducer(state, action) ?? state;
 	}
 };
 
