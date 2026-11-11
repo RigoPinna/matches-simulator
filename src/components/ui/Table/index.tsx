@@ -4,11 +4,13 @@ import { IItemTable } from '../../../store';
 
 interface ITable {
 	table: IItemTable[];
+	/** 'group': only the top 2 are highlighted (World Cup groups). */
+	variant?: 'league' | 'group';
 }
-export const Table = ({ table }: ITable) => {
+export const Table = ({ table, variant = 'league' }: ITable) => {
 
 	return (
-		<table className={styles.table}>
+		<table className={`${styles.table} ${variant === 'group' ? styles.group : ''}`}>
 			<thead className={styles.table_head}>
 				<tr>
 					<th className={`${styles.table_head_club}`}>Club</th>
