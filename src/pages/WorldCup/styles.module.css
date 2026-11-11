@@ -602,6 +602,7 @@
 	height: 100vh;
 	bottom: 0;
 	left: 0;
-	z-index: 1;
+	/* Behind every child of .content (which creates the stacking context). */
+	z-index: -1;
 	pointer-events: none;
 }
