@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import { TAction } from './seassonReducer';
+import { TIntlLeague, TLeague, intlClubsDefaults } from './leagues';
 import america from '../../assets/america-logo.png';
 import tigres from '../../assets/Tigres-logo.png';
 import chivas from '../../assets/chivas-logo.png';
@@ -25,6 +26,7 @@ export interface IClub {
 	supercups?: number;
 	plateChampions?: number;
 	plateSupercups?: number;
+	worldCups?: number;
 }
 
 export interface IItemTable {
@@ -60,7 +62,6 @@ export type TFase = {
 	currentJourney: number;
 };
 
-export type TLeague = 'PRIMERA' | 'PLATE';
 
 export type TPromotion = {
 	promoted: IClub;
@@ -74,6 +75,10 @@ export type TSeason = {
 	league: TLeague;
 	pairId?: string;
 	promotion?: TPromotion;
+	/** World Cup cycle this season belongs to (1, 2, ...). Missing on seasons created before the World Cup existed. */
+	wcCycle?: number;
+	/** Position of this season inside its World Cup cycle (1..SEASONS_PER_WORLD_CUP). */
+	wcCycleSeason?: number;
 	fase: {
 		regular: TFase;
 		semifinal: TFase & { winners?: ITeamMatch[] };
@@ -82,6 +87,48 @@ export type TSeason = {
 	matches?: TMatch[];
 	table: IItemTable[];
 	winner: ITeamMatch[] | null;
+};
+
+export type TWorldCupStage =
+	| 'GROUP_DRAW'
+	| 'GROUPS'
+	| 'KNOCKOUT_DRAW'
+	| 'QUARTERS'
+	| 'SEMIS'
+	| 'FINAL'
+	| 'FINISHED';
+export type TGroupName = 'A' | 'B' | 'C' | 'D';
+export type TWorldCupQualifier = {
+	club: IClub;
+	league: TLeague;
+	/** Position in its league's cycle table; also the draw pot (1..4). */
+	position: number;
+	pts: number;
+};
+export type TWorldCupGroup = {
+	name: TGroupName;
+	table: IItemTable[];
+	journeys: TJourney[];
+};
+export type TGroupDrawStep = { clubUuid: string; group: TGroupName; pot: number };
+export type TWorldCup = {
+	uuid: string;
+	number: number;
+	cycle: number;
+	isCurrent: boolean;
+	stage: TWorldCupStage;
+	qualifiers: TWorldCupQualifier[];
+	/** Empty until the group draw happens. */
+	groups: TWorldCupGroup[];
+	/** Order in which the group draw reveals each club (drives the animation). */
+	groupDraw: TGroupDrawStep[];
+	/** 0-based index of the group matchday being played. */
+	groupJourney: number;
+	/** Bracket order: SF1 = W(QF1) vs W(QF2), SF2 = W(QF3) vs W(QF4). */
+	quarterfinals: TMatches[];
+	semifinals: TMatches[];
+	final: TMatches[];
+	champion: ITeamMatch | null;
 };
 
 const seasons: TSeason[] = [];
@@ -225,6 +272,8 @@ export type TState = {
 	seasons: TSeason[];
 	clubs: IClub[];
 	plateClubs: IClub[];
+	intlClubs: Record<TIntlLeague, IClub[]>;
+	worldCups: TWorldCup[];
 	dispatch: (action: TAction) => void;
 };
 export const globalState: TState = {
@@ -232,6 +281,8 @@ export const globalState: TState = {
 	seasons,
 	clubs,
 	plateClubs,
+	intlClubs: intlClubsDefaults,
+	worldCups: [],
 	dispatch: () => { },
 };
 export const SeassonContext = createContext(globalState);
