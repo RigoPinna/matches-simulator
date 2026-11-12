@@ -1,4 +1,4 @@
-import { CSSProperties, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
 	LEAGUE_INFO,
 	QUALIFIERS_PER_LEAGUE,
@@ -8,6 +8,7 @@ import {
 } from '../../store';
 import { GROUP_NAMES } from '../../helpers';
 import { Button, ClubBadge, ItemClub } from '../../components/ui';
+import { DrawBowl } from './DrawBowl';
 import styles from './styles.module.css';
 
 const SPIN_MS = 750;
@@ -57,7 +58,15 @@ export const GroupDraw = ({ worldCup }: { worldCup: TWorldCup }) => {
 	if (animating && phase === 'reveal') drawnUuids.add(steps[revealed].clubUuid);
 	const current = animating ? steps[revealed] : undefined;
 	const currentQualifier = current ? byUuid.get(current.clubUuid) : undefined;
-	const remaining = worldCup.qualifiers.filter(q => !drawnUuids.has(q.club.uuid));
+	const remainingKey = worldCup.qualifiers
+		.filter(q => !drawnUuids.has(q.club.uuid))
+		.map(q => q.club.uuid)
+		.join(',');
+	// Stable array while nobody is drawn, so the bowl doesn't resync every render.
+	const remainingClubs = useMemo(
+		() => worldCup.qualifiers.filter(q => remainingKey.split(',').includes(q.club.uuid)).map(q => q.club),
+		[remainingKey, worldCup.qualifiers],
+	);
 
 	const startDraw = () => {
 		setRevealed(0);
@@ -90,23 +99,7 @@ export const GroupDraw = ({ worldCup }: { worldCup: TWorldCup }) => {
 			</p>
 
 			<div className={styles.draw_stage}>
-				<div className={`${styles.bowl} ${animating && phase === 'spinning' ? styles.bowl_spin : ''}`}>
-					<div className={styles.bowl_balls}>
-						{remaining.map((q, i) => (
-							<span
-								key={q.club.uuid}
-								className={styles.ball}
-								style={
-									{
-										background: q.club.color,
-										'--angle': `${(360 / remaining.length) * i}deg`,
-										'--radius': `${i % 2 === 0 ? 48 : 28}px`,
-									} as CSSProperties
-								}
-							/>
-						))}
-					</div>
-				</div>
+				<DrawBowl clubs={remainingClubs} spinning={animating && phase === 'spinning'} />
 				{phase === 'reveal' && current && currentQualifier && (
 					<div className={styles.reveal_card} key={current.clubUuid}>
 						<ClubBadge className={styles.badge_lg} {...currentQualifier.club} />
