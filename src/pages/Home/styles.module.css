@@ -62,3 +62,49 @@
 .winners_btn {
 	margin-bottom: 50px;
 }
+.badge_wc {
+	background: #000;
+	border: 1.5px solid #c9a24a;
+	overflow: hidden;
+}
+.badge_wc img {
+	width: 28px;
+	height: 28px;
+	object-fit: contain;
+}
+.winner_info .wc_current {
+	color: #c9a24a;
+}
+.wc_road_step {
+	flex: 1;
+	height: 4px;
+	border-radius: 3px;
+	background: var(--dark-200);
+}
+.wc_road_step_done {
+	background: var(--primary);
+}
+.wc_empty {
+	padding: 12px 0;
+	font-size: 13px;
+	color: var(--grey-400);
+}
+.wc_champion {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	color: var(--grey-400);
+}
+.wc_champion > div {
+	width: auto;
+}
+.wc_champion img {
+	height: 20px !important;
+}
+.wc_road_steps {
+	display: flex;
+	gap: 4px;
+	max-width: 160px;
+	margin-top: 6px;
+}

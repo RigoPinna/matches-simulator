@@ -22,3 +22,15 @@
 	background: var(--primary);
 	color: var(--white);
 }
+.scrollable {
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+.scrollable::-webkit-scrollbar {
+	display: none;
+}
+.scrollable .tab {
+	flex: 0 0 auto;
+	white-space: nowrap;
+	padding: 10px 12px;
+}

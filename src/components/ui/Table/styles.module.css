@@ -52,3 +52,9 @@
 		font-size: 10px;
 	}
 }
+.group .body tr:nth-child(n + 3) .table_head_club {
+	border-left-color: transparent;
+}
+.group .body tr:nth-child(2) .table_head_club {
+	border-left: 3px solid #137c45;
+}

@@ -1,4 +1,4 @@
-import { IClub, IItemTable, ITeamMatch, TJourney } from '../store';
+import { IClub, IItemTable, ITeamMatch, TJourney, TMatches } from '../store';
 import { TWinner, getWinner } from './getWinner';
 import { isMyClub } from './isMyClub';
 
@@ -151,6 +151,29 @@ export const orderMyTeam = (myClub: IClub, table: IItemTable[], journey: TJourne
 			return b.gd - a.gd;
 		}
 		// Si los gd son iguales, ordenar por gf de mayor a menor
+		return b.gf - a.gf;
+	});
+};
+
+/**
+ * Applies every scored match in `matches` to `table` (ignoring myClub
+ * special-casing) and returns it sorted by pts, gd, gf. Used by the World
+ * Cup group stage, where each match is applied exactly once, at the moment
+ * it gets its score.
+ */
+export const applyMatchesToTable = (table: IItemTable[], matches: TMatches[]): IItemTable[] => {
+	let newTable = [...table];
+	for (const match of matches) {
+		if (typeof match.local.score !== 'number' || typeof match.visit.score !== 'number') continue;
+		const clubs = updateClubs(getWinner(match), newTable);
+		newTable = newTable.map(current => {
+			const club = clubs.find(item => item.club.uuid === current.club.uuid);
+			return club || current;
+		});
+	}
+	return newTable.sort((a, b) => {
+		if (a.pts !== b.pts) return b.pts - a.pts;
+		if (a.gd !== b.gd) return b.gd - a.gd;
 		return b.gf - a.gf;
 	});
 };

@@ -5,11 +5,12 @@ import confetti from 'canvas-confetti';
 import { useCurrentSeasonParams } from '../../hooks';
 import { Button, ClubBadge, MatchList } from '../../components/ui';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
-import { SeassonContext } from '../../store';
+import { SeassonContext, isReadOnlyLeague } from '../../store';
 export const Final = () => {
 	const { dispatch } = useContext(SeassonContext);
 	const { season } = useCurrentSeasonParams();
 	const final = season?.fase.final;
+	const readOnly = season ? isReadOnlyLeague(season.league) : false;
 	const semifinals = season?.fase.semifinal;
 	const winner = final?.winners && final?.winners[0];
 	useEffect(() => {
@@ -104,9 +105,11 @@ export const Final = () => {
 								</div>
 							)}
 
-							<Button.Primary className={styles.button} onClick={onFinishSeasons}>
-								Continue
-							</Button.Primary>
+							{!readOnly && (
+								<Button.Primary className={styles.button} onClick={onFinishSeasons}>
+									Continue
+								</Button.Primary>
+							)}
 						</div>
 					</div>
 					<div

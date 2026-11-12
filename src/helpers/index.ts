@@ -7,3 +7,4 @@ export * from './getWinner';
 export * from './isMyClub';
 export * from './orderTable';
 export * from './setSeasons';
+export * from './worldCup';

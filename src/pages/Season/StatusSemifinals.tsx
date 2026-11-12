@@ -2,13 +2,14 @@ import { useContext, useEffect, useMemo } from 'react';
 import { Button, MatchList } from '../../components/ui';
 import { useCurrentSeasonParams } from '../../hooks';
 import styles from './styles.module.css';
-import { SeassonContext } from '../../store';
+import { SeassonContext, isReadOnlyLeague } from '../../store';
 import confetti from 'canvas-confetti';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
 export const StatusSemifinals = () => {
 	const { myClub, dispatch } = useContext(SeassonContext);
 	const { season } = useCurrentSeasonParams();
 	const semifinals = season?.fase.semifinal;
+	const readOnly = season ? isReadOnlyLeague(season.league) : false;
 	const isWinner = useMemo(
 		() => semifinals?.winners?.some(item => item.uuid === myClub?.uuid),
 		[semifinals?.winners],
@@ -61,9 +62,11 @@ export const StatusSemifinals = () => {
 						{isWinner && <p>Congratulations! your team is in the final🏆🎉</p>}
 						<p>Let's go to the final🏆</p>
 
-						<Button.Primary className={styles.button} onClick={goToFinal}>
-							Continue
-						</Button.Primary>
+						{!readOnly && (
+							<Button.Primary className={styles.button} onClick={goToFinal}>
+								Continue
+							</Button.Primary>
+						)}
 					</div>
 					{semifinals.matches.matches.map((journey, i) => (
 						<MatchList

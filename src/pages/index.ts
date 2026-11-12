@@ -3,3 +3,4 @@ export * from './Season';
 export * from './ClubsList';
 export * from './Winners';
 export * from './Club';
+export * from './WorldCup';
