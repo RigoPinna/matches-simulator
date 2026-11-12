@@ -1,4 +1,28 @@
 import type { IClub } from './SeassonContext';
+import realMadrid from '../../assets/clubs/real-madrid.png';
+import barcelona from '../../assets/clubs/barcelona.png';
+import atleticoMadrid from '../../assets/clubs/atletico-madrid.png';
+import athleticClub from '../../assets/clubs/athletic-club.png';
+import manchesterCity from '../../assets/clubs/manchester-city.png';
+import liverpool from '../../assets/clubs/liverpool.png';
+import arsenal from '../../assets/clubs/arsenal.png';
+import chelsea from '../../assets/clubs/chelsea.png';
+import flamengo from '../../assets/clubs/flamengo.png';
+import palmeiras from '../../assets/clubs/palmeiras.png';
+import saoPaulo from '../../assets/clubs/sao-paulo.png';
+import corinthians from '../../assets/clubs/corinthians.png';
+import riverPlate from '../../assets/clubs/river-plate.png';
+import bocaJuniors from '../../assets/clubs/boca-juniors.png';
+import racing from '../../assets/clubs/racing.png';
+import estudiantes from '../../assets/clubs/estudiantes.png';
+import bayernMunich from '../../assets/clubs/bayern-munich.png';
+import borussiaDortmund from '../../assets/clubs/borussia-dortmund.png';
+import bayerLeverkusen from '../../assets/clubs/bayer-leverkusen.png';
+import rbLeipzig from '../../assets/clubs/rb-leipzig.png';
+import lafc from '../../assets/clubs/lafc.png';
+import interMiami from '../../assets/clubs/inter-miami.png';
+import laGalaxy from '../../assets/clubs/la-galaxy.png';
+import columbusCrew from '../../assets/clubs/columbus-crew.png';
 
 /**
  * Leagues that run in parallel every season. PRIMERA / PLATE are the
@@ -36,40 +60,39 @@ export const isIntlLeague = (league: TLeague): league is TIntlLeague =>
 export const isReadOnlyLeague = isIntlLeague;
 
 /**
- * International clubs. They have no logo yet: `ClubBadge`/`ItemClub` fall
- * back to an initials badge in the club color. To add a logo, put the PNG in
- * src/assets, import it here and set `image` — old saves pick it up
- * automatically on the next load (see sanitizeSeasonImages).
+ * International clubs. Logos live in src/assets/clubs (256x256, transparent
+ * background). Changing a logo is enough: old saves pick it up automatically
+ * on the next load (see sanitizeSeasonImages).
  */
 export const intlClubsDefaults: Record<TIntlLeague, IClub[]> = {
 	ESP_ENG: [
-		{ uuid: 'esp-1', name: 'Real Madrid', color: '#D4AF37' },
-		{ uuid: 'esp-2', name: 'Barcelona', color: '#A50044' },
-		{ uuid: 'esp-3', name: 'Atlético de Madrid', color: '#CB3524' },
-		{ uuid: 'esp-4', name: 'Athletic Club', color: '#EE2523' },
-		{ uuid: 'eng-1', name: 'Manchester City', color: '#6CABDD' },
-		{ uuid: 'eng-2', name: 'Liverpool', color: '#C8102E' },
-		{ uuid: 'eng-3', name: 'Arsenal', color: '#EF0107' },
-		{ uuid: 'eng-4', name: 'Chelsea', color: '#034694' },
+		{ uuid: 'esp-1', name: 'Real Madrid', image: realMadrid, color: '#D4AF37' },
+		{ uuid: 'esp-2', name: 'Barcelona', image: barcelona, color: '#A50044' },
+		{ uuid: 'esp-3', name: 'Atlético de Madrid', image: atleticoMadrid, color: '#CB3524' },
+		{ uuid: 'esp-4', name: 'Athletic Club', image: athleticClub, color: '#EE2523' },
+		{ uuid: 'eng-1', name: 'Manchester City', image: manchesterCity, color: '#6CABDD' },
+		{ uuid: 'eng-2', name: 'Liverpool', image: liverpool, color: '#C8102E' },
+		{ uuid: 'eng-3', name: 'Arsenal', image: arsenal, color: '#EF0107' },
+		{ uuid: 'eng-4', name: 'Chelsea', image: chelsea, color: '#034694' },
 	],
 	BRA_ARG: [
-		{ uuid: 'bra-1', name: 'Flamengo', color: '#C3281E' },
-		{ uuid: 'bra-2', name: 'Palmeiras', color: '#006437' },
-		{ uuid: 'bra-3', name: 'São Paulo', color: '#E30613' },
-		{ uuid: 'bra-4', name: 'Corinthians', color: '#5A5A5A' },
-		{ uuid: 'arg-1', name: 'River Plate', color: '#EB192E' },
-		{ uuid: 'arg-2', name: 'Boca Juniors', color: '#103F79' },
-		{ uuid: 'arg-3', name: 'Racing Club', color: '#75AADB' },
-		{ uuid: 'arg-4', name: 'Estudiantes', color: '#D50032' },
+		{ uuid: 'bra-1', name: 'Flamengo', image: flamengo, color: '#C3281E' },
+		{ uuid: 'bra-2', name: 'Palmeiras', image: palmeiras, color: '#006437' },
+		{ uuid: 'bra-3', name: 'São Paulo', image: saoPaulo, color: '#E30613' },
+		{ uuid: 'bra-4', name: 'Corinthians', image: corinthians, color: '#5A5A5A' },
+		{ uuid: 'arg-1', name: 'River Plate', image: riverPlate, color: '#EB192E' },
+		{ uuid: 'arg-2', name: 'Boca Juniors', image: bocaJuniors, color: '#103F79' },
+		{ uuid: 'arg-3', name: 'Racing Club', image: racing, color: '#75AADB' },
+		{ uuid: 'arg-4', name: 'Estudiantes', image: estudiantes, color: '#D50032' },
 	],
 	GER_USA: [
-		{ uuid: 'ger-1', name: 'Bayern Munich', color: '#DC052D' },
-		{ uuid: 'ger-2', name: 'Borussia Dortmund', color: '#E5C700' },
-		{ uuid: 'ger-3', name: 'Bayer Leverkusen', color: '#E32221' },
-		{ uuid: 'ger-4', name: 'RB Leipzig', color: '#DD0741' },
-		{ uuid: 'usa-1', name: 'LAFC', color: '#C39E6D' },
-		{ uuid: 'usa-2', name: 'Inter Miami', color: '#F7B5CD' },
-		{ uuid: 'usa-3', name: 'LA Galaxy', color: '#00245D' },
-		{ uuid: 'usa-4', name: 'Columbus Crew', color: '#D4C400' },
+		{ uuid: 'ger-1', name: 'Bayern Munich', image: bayernMunich, color: '#DC052D' },
+		{ uuid: 'ger-2', name: 'Borussia Dortmund', image: borussiaDortmund, color: '#E5C700' },
+		{ uuid: 'ger-3', name: 'Bayer Leverkusen', image: bayerLeverkusen, color: '#E32221' },
+		{ uuid: 'ger-4', name: 'RB Leipzig', image: rbLeipzig, color: '#DD0741' },
+		{ uuid: 'usa-1', name: 'LAFC', image: lafc, color: '#C39E6D' },
+		{ uuid: 'usa-2', name: 'Inter Miami', image: interMiami, color: '#F7B5CD' },
+		{ uuid: 'usa-3', name: 'LA Galaxy', image: laGalaxy, color: '#00245D' },
+		{ uuid: 'usa-4', name: 'Columbus Crew', image: columbusCrew, color: '#D4C400' },
 	],
 };
