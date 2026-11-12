@@ -606,3 +606,10 @@
 	z-index: -1;
 	pointer-events: none;
 }
+.modal_simulate {
+	width: 100%;
+	justify-content: center;
+	padding: 10px;
+	margin-bottom: 8px;
+	font-size: 15px;
+}

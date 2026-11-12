@@ -3,7 +3,8 @@ import { SeassonContext, TMatches } from '../../../store';
 import { TAddMyScore } from '../../../store/Seasson/seassonReducer';
 import { useCurrentSeasonParams, useModal } from '../../../hooks';
 import { Button, Input, ItemClub, Modal } from '..';
-import { Star, Ok } from '../../icons';
+import { Star, Ok, Fire } from '../../icons';
+import { getRandomResult } from '../../../helpers/getRandomScore';
 
 import styles from './styles.module.css';
 
@@ -22,7 +23,10 @@ export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch)
 	const { myClub, dispatch } = useContext(SeassonContext);
 	const { isOpen, onClose, onOpen } = useModal(false);
 	const { season } = useCurrentSeasonParams();
-	const [form, setForm] = useState({ local: null, visitor: null });
+	const [form, setForm] = useState<{ local: number | null; visitor: number | null }>({
+		local: null,
+		visitor: null,
+	});
 	const isMyClub = useMemo(
 		() => myClub?.uuid === local.uuid || myClub?.uuid === visit.uuid,
 		[myClub],
@@ -51,6 +55,13 @@ export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch)
 			} as TAddMyScore,
 		});
 		onClose();
+	};
+
+	/** Fills both inputs with a random result (no draws in semifinal / final). */
+	const simulateScore = (evt?: MouseEvent<HTMLButtonElement>) => {
+		evt?.preventDefault();
+		const result = getRandomResult(type !== 'REGULAR');
+		setForm({ local: result.local, visitor: result.visit });
 	};
 
 	const handleAddScore = ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -96,9 +107,15 @@ export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch)
 						/>
 					</div>
 					{status === 'TODO' && (
-						<Button.Primary onClick={setScore} className={styles.modal_btn}>
-							<Ok />
-						</Button.Primary>
+						<div className={styles.modal_actions}>
+							<Button.Secondary onClick={simulateScore} className={styles.modal_simulate}>
+								<Fire />
+								Simulate
+							</Button.Secondary>
+							<Button.Primary onClick={setScore} className={styles.modal_btn}>
+								<Ok />
+							</Button.Primary>
+						</div>
 					)}
 				</form>
 			</Modal>

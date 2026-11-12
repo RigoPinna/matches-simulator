@@ -76,3 +76,15 @@
 	border-radius: 100%;
 	margin-left: auto;
 }
+.modal_actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+.modal_actions .modal_btn {
+	margin-left: 0;
+}
+.modal_simulate {
+	font-size: 14px;
+}

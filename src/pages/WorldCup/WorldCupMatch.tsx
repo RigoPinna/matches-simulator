@@ -1,10 +1,10 @@
 import { ChangeEvent, MouseEvent, useContext, useState } from 'react';
 import { SeassonContext, TMatches } from '../../store';
 import { TWorldCupAddMyScore } from '../../store/WorldCup/worldCupReducer';
-import { getWinner, isMyClub } from '../../helpers';
+import { getRandomResult, getWinner, isMyClub } from '../../helpers';
 import { useModal } from '../../hooks';
 import { Button, Input, ItemClub, Modal } from '../../components/ui';
-import { Ok, Star } from '../../components/icons';
+import { Fire, Ok, Star } from '../../components/icons';
 import styles from './styles.module.css';
 
 interface IWorldCupMatch {
@@ -35,6 +35,11 @@ export const WorldCupMatch = ({ wid, match, knockout }: IWorldCupMatch) => {
 
 	const onChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
 		setForm(prev => ({ ...prev, [target.name]: toScore(target.value) }));
+	};
+	/** Fills both inputs with a random result (no draws in knockout rounds). */
+	const onSimulate = (evt?: MouseEvent<HTMLButtonElement>) => {
+		evt?.preventDefault();
+		setForm(getRandomResult(knockout));
 	};
 	const onSave = (evt?: MouseEvent<HTMLButtonElement>) => {
 		evt?.preventDefault();
@@ -102,6 +107,10 @@ export const WorldCupMatch = ({ wid, match, knockout }: IWorldCupMatch) => {
 					{invalid && (
 						<p className={styles.modal_error}>Knockout matches need a winner — no draws</p>
 					)}
+					<Button.Secondary onClick={onSimulate} className={styles.modal_simulate}>
+						<Fire />
+						Simulate
+					</Button.Secondary>
 					<Button.Primary
 						onClick={onSave}
 						className={`${styles.modal_btn} ${invalid ? styles.modal_btn_disabled : ''}`}>
