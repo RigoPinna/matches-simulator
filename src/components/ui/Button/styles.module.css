@@ -29,3 +29,13 @@
 .secondary:active {
 	color: #409cff;
 }
+.button:disabled,
+.button:disabled:hover {
+	background: var(--primary);
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+.secondary:disabled,
+.secondary:disabled:hover {
+	background: transparent;
+}
