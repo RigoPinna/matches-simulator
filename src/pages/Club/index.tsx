@@ -69,7 +69,10 @@ export const ClubPage = () => {
 							</li>
 						)}
 						<li className={styles.list_item}>
-							<p className={styles.number_trophy}>{statistics.winPercentage.toFixed(1)}%</p>
+							<p className={styles.number_trophy}>
+								{statistics.winPercentage.toFixed(1)}
+								<span>%</span>
+							</p>
 							<div className={styles.statistic_wrapper}>
 								<div className={styles.statistic}>
 									<p>{statistics.wins}</p>W

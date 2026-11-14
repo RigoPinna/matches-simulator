@@ -59,6 +59,9 @@
 	font-weight: 700;
 	color: var(--white);
 }
+.number_trophy span {
+	font-size: 10px;
+}
 .title {
 	font-size: 8px;
 	font-weight: 700;
