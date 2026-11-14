@@ -1,19 +1,57 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft } from '../../components/icons';
+import { ArrowLeft, Filter } from '../../components/icons';
 import { Main } from '../../components/layouts';
-import { Button, ClubBadge, Header, LastMatches, MatchList } from '../../components/ui';
-import { useContext } from 'react';
+import { BottomSheet, Button, ClubBadge, Header, LastMatches } from '../../components/ui';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { SeassonContext } from '../../store';
+import {
+	DEFAULT_CLUB_MATCH_FILTERS,
+	TClubMatchFilters,
+	filterClubMatches,
+	getClubMatches,
+	getOpponents,
+} from '../../helpers';
+import { useModal } from '../../hooks';
 import lige from '../../assets/champion.png';
 import supercup from '../../assets/supercup.png';
 import worldCupTrophy from '../../assets/wp-thropy.png';
+import { ClubMatchList } from './ClubMatchList';
+import { MatchFilters } from './MatchFilters';
 import styles from './styles.module.css';
-import { useStatistics } from '../../hooks/';
+import matchStyles from './matches.module.css';
 export const ClubPage = () => {
 	const navigate = useNavigate();
 	const { cid } = useParams();
-	const { clubs, plateClubs, intlClubs, seasons } = useContext(SeassonContext);
-	const [statistics, lastMatches] = useStatistics(cid || '');
+	const { clubs, plateClubs, intlClubs, seasons, worldCups } = useContext(SeassonContext);
+	const filtersSheet = useModal(false);
+	const [filters, setFilters] = useState<TClubMatchFilters>(DEFAULT_CLUB_MATCH_FILTERS);
+	const resetFilters = useCallback(() => setFilters(DEFAULT_CLUB_MATCH_FILTERS), []);
+
+	// Every played match (league, supercup and World Cup), newest first.
+	const allMatches = useMemo(
+		() => getClubMatches(cid || '', seasons, worldCups),
+		[cid, seasons, worldCups],
+	);
+	const opponents = useMemo(() => getOpponents(allMatches), [allMatches]);
+	const filteredMatches = useMemo(
+		() => filterClubMatches(allMatches, filters),
+		[allMatches, filters],
+	);
+	const activeFilters = (Object.keys(filters) as (keyof TClubMatchFilters)[]).filter(
+		key => filters[key] !== 'ALL',
+	).length;
+	const statistics = useMemo(() => {
+		const wins = allMatches.filter(m => m.result === 'WIN').length;
+		const draws = allMatches.filter(m => m.result === 'DRAW').length;
+		const losses = allMatches.length - wins - draws;
+		return {
+			wins,
+			draws,
+			losses,
+			winPercentage: allMatches.length ? (wins / allMatches.length) * 100 : 0,
+		};
+	}, [allMatches]);
+
 	const club = [...clubs, ...plateClubs, ...Object.values(intlClubs).flat()].find(
 		({ uuid }) => uuid === cid,
 	);
@@ -88,16 +126,39 @@ export const ClubPage = () => {
 						</li>
 					</ul>
 				</div>
-				<MatchList
-					isCurrent={false}
-					matches={{
-						jid: 'none',
-						status: 'DONE',
-						value: lastMatches,
-					}}
-					title='All matches'
-					type='REGULAR'
+				<div className={matchStyles.matches_header}>
+					<h3>
+						All matches
+						<span>{filteredMatches.length}</span>
+					</h3>
+					<Button.Primary className={matchStyles.filter_btn} onClick={filtersSheet.onOpen}>
+						<Filter />
+						Filter by
+						{activeFilters > 0 && <span className={matchStyles.filter_count}>{activeFilters}</span>}
+					</Button.Primary>
+				</div>
+				<ClubMatchList
+					cid={club.uuid}
+					matches={filteredMatches}
+					hasFilters={activeFilters > 0}
+					onReset={resetFilters}
 				/>
+				<BottomSheet
+					isOpen={filtersSheet.isOpen}
+					onClose={filtersSheet.onClose}
+					title='Filters'
+					footer={
+						<>
+							<Button.Secondary className={matchStyles.sheet_reset} onClick={resetFilters}>
+								Reset
+							</Button.Secondary>
+							<Button.Primary className={matchStyles.sheet_apply} onClick={filtersSheet.onClose}>
+								Show {filteredMatches.length} matches
+							</Button.Primary>
+						</>
+					}>
+					<MatchFilters filters={filters} onChange={setFilters} opponents={opponents} />
+				</BottomSheet>
 			</Main>
 		</>
 	);
