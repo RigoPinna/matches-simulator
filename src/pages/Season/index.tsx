@@ -8,6 +8,7 @@ import { StatusSemifinals } from './StatusSemifinals';
 import { Final } from './Final';
 import styles from './styles.module.css';
 import { Finished } from './Finished';
+import { StandingsRace } from './StandingsRace';
 import {
 	LEAGUE_INFO,
 	QUALIFIERS_PER_LEAGUE,
@@ -118,6 +119,8 @@ export const SeasonPage = () => {
 				</div>
 			</div>
 			<Main>
+				{/* Replay of the table, journey by journey, once the regular season is over. */}
+				{season.fase.regular.status !== 'ACTIVE' && <StandingsRace season={season} />}
 				<StatusJourney />
 				<StatusSemifinals />
 				<Final />
