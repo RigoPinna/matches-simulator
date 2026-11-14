@@ -99,7 +99,7 @@ export const Champion = ({ worldCup }: { worldCup: TWorldCup }) => {
 			<div className={styles.champion}>
 				<h2>Champion ✨</h2>
 				<div className={styles.champion_badge_wrapper}>
-					<ClubBadge className={styles.champion_badge} {...champion} />
+					<ClubBadge className={styles.champion_badge} {...champion} showChampion={false} />
 					<img className={styles.champion_trophy} src={worldCupTrophy} alt='World Cup' />
 				</div>
 				<p>{champion.name}</p>

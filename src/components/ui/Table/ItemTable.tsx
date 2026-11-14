@@ -27,6 +27,7 @@ export const ItemTable = (props: IItemTable) => {
 				{props.positions}
 				<ItemClub
 					className={styles.table_head_club_item}
+					uuid={props.club.uuid}
 					image={props.club.image}
 					name={props.club.name}
 					color={props.club.color}

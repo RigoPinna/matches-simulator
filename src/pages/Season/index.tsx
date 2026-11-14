@@ -76,6 +76,7 @@ export const SeasonPage = () => {
 					{lastWinner && (
 						<>
 							<ClubBadge
+								uuid={lastWinner.club.uuid}
 								image={lastWinner.club.image}
 								name={lastWinner.club.name}
 								color={lastWinner.club.color}

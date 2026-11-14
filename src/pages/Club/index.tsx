@@ -76,6 +76,7 @@ export const ClubPage = () => {
 				<div className={styles.header}>
 					<ClubBadge
 						className={styles.club_image}
+						uuid={club.uuid}
 						image={club?.image}
 						name={club?.name || ''}
 						color={club?.color}

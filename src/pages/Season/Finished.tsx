@@ -59,17 +59,17 @@ export const Finished = () => {
 							season?.fase?.final?.winners && season?.table[0].club.uuid !== season?.fase?.final?.winners[0].uuid ? (
 								<>
 									<div className={styles.champion_container}>
-										<ClubBadge className={styles.champion_team} image={season?.table[0].club.image} name={season?.table[0].club.name || ''} color={season?.table[0].club.color} />
+										<ClubBadge className={styles.champion_team} uuid={season?.table[0].club.uuid} image={season?.table[0].club.image} name={season?.table[0].club.name || ''} color={season?.table[0].club.color} />
 										<img className={styles.trophy} src={ligeImg} />
 									</div>
 									<div className={styles.champion_container}>
-										<ClubBadge className={styles.champion_team} image={season?.fase?.final?.winners[0].image} name={season?.fase?.final?.winners[0].name || ''} color={season?.fase?.final?.winners[0].color} />
+										<ClubBadge className={styles.champion_team} uuid={season?.fase?.final?.winners[0].uuid} image={season?.fase?.final?.winners[0].image} name={season?.fase?.final?.winners[0].name || ''} color={season?.fase?.final?.winners[0].color} />
 										<img className={styles.trophy} src={supercupImg} />
 									</div>
 								</>
 							) : (
 								<div className={styles.champion_container}>
-									<ClubBadge className={styles.champion_team} image={season?.table[0].club.image} name={season?.table[0].club.name || ''} color={season?.table[0].club.color} />
+									<ClubBadge className={styles.champion_team} uuid={season?.table[0].club.uuid} image={season?.table[0].club.image} name={season?.table[0].club.name || ''} color={season?.table[0].club.color} />
 									<img className={styles.trophy} src={ligeImg} />
 									<img className={`${styles.trophy} ${styles.trophy_super_cup}`} src={supercupImg} />
 								</div>
