@@ -158,7 +158,7 @@ export const DrawBowl = ({ clubs, spinning }: IDrawBowl) => {
 						if (node) nodes.current.set(club.uuid, node);
 						else nodes.current.delete(club.uuid);
 					}}>
-					<ClubBadge className={styles.ball_crest} {...club} />
+					<ClubBadge className={styles.ball_crest} {...club} showChampion={false} />
 				</div>
 			))}
 			<div className={styles.bowl_glass} />

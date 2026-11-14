@@ -78,11 +78,11 @@ export const ItemMatch = ({ type, local, visit, status, jid, uuid }: TItemMatch)
 						<Star />
 					</span>
 				)}
-				<ItemClub className={styles.club} image={local.image} name={local.name} />
+				<ItemClub className={styles.club} uuid={local.uuid} image={local.image} name={local.name} />
 				<p className={styles.match_score}>
 					{local.score} - {visit.score}
 				</p>
-				<ItemClub className={styles.club} image={visit.image} name={visit.name} />
+				<ItemClub className={styles.club} uuid={visit.uuid} image={visit.image} name={visit.name} />
 			</li>
 			<Modal title='Add your score' isOpen={isOpen} onClose={onClose}>
 				<form>

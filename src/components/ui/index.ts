@@ -13,3 +13,4 @@ export { default as List } from './List';
 export * from './LastMatches';
 export * from './BottomSheet';
 export * from './SegmentedControl';
+export * from './ChampionMark';

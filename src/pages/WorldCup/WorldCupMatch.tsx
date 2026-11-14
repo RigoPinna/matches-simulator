@@ -68,6 +68,7 @@ export const WorldCupMatch = ({ wid, match, knockout }: IWorldCupMatch) => {
 				)}
 				<ItemClub
 					className={`${styles.match_club} ${loserUuid === local.uuid ? styles.match_loser : ''}`}
+					uuid={local.uuid}
 					image={local.image}
 					name={local.name}
 					color={local.color}
@@ -77,6 +78,7 @@ export const WorldCupMatch = ({ wid, match, knockout }: IWorldCupMatch) => {
 				</div>
 				<ItemClub
 					className={`${styles.match_club} ${styles.match_club_visit} ${loserUuid === visit.uuid ? styles.match_loser : ''}`}
+					uuid={visit.uuid}
 					image={visit.image}
 					name={visit.name}
 					color={visit.color}

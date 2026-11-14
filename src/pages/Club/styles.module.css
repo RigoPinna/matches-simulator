@@ -1,91 +1,63 @@
-.header {
+/* ---------- Trophy tiles (horizontal scroll) ---------- */
+.trophies {
 	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	justify-content: center;
-	align-items: center;
-	padding-top: 12px;
-}
-.club_image {
-	width: 64px;
-	height: 64px;
-	font-size: 20px;
-}
-.statistics {
-	width: 100%;
-	overflow-x: auto;
-	overflow-y: none;
-}
-.list {
-	display: flex;
-	flex-direction: row;
-	width: 400px;
-	flex-wrap: nowrap;
-	/* padding: 27px 0; */
-	margin: 27px 0 0;
+	gap: 12px;
+	margin: 20px -16px 0;
+	padding: 4px 16px;
 	list-style: none;
-	gap: 28px;
-	height: 100px;
-	align-items: center;
+	overflow-x: auto;
+	scrollbar-width: none;
 }
-.list_item {
+.trophies::-webkit-scrollbar {
+	display: none;
+}
+.tile {
+	position: relative;
 	display: flex;
+	flex: 0 0 104px;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	flex-direction: column;
-	gap: 5px;
-	background-color: var(--dark-500);
+	gap: 4px;
+	height: 104px;
 	border-radius: 23px;
-	width: 100px;
-	height: 100px;
-	position: relative;
+	background-color: var(--dark-500);
 	overflow: hidden;
 }
-.champ {
+.tile_empty .tile_count,
+.tile_empty .tile_title,
+.tile_empty .tile_image {
+	opacity: 0.35;
+}
+.tile_count {
+	position: relative;
+	z-index: 2;
+	font-size: 30px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+.tile_title {
+	position: relative;
+	z-index: 2;
+	max-width: 80px;
+	text-align: center;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--grey-400);
+}
+.tile_image {
 	position: absolute;
 	top: 5px;
 	right: -18px;
-	opacity: 0.5;
-	width: 57px;
 	z-index: 1;
+	width: 57px;
+	opacity: 0.5;
 }
-.champ_w {
-	right: -18px;
+.tile_empty .tile_image {
+	opacity: 0.15;
+}
+.tile_image_wc {
 	top: 27px;
 	scale: 1.5;
-}
-.number_trophy {
-	font-size: 28px;
-	font-weight: 700;
-	color: var(--white);
-}
-.number_trophy span {
-	font-size: 10px;
-}
-.title {
-	font-size: 8px;
-	font-weight: 700;
-	color: var(--grey-400);
-}
-.number_trophy,
-.title {
-	z-index: 2;
-}
-.statistic_wrapper {
-	display: flex;
-	width: 100%;
-	flex-direction: row;
-	gap: 5px;
-	justify-content: center;
-}
-.statistic {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-.statistic {
-	font-size: 8px;
-}
-.statistic > p {
-	font-weight: bold;
 }

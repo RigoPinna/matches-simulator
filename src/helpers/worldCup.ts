@@ -222,3 +222,9 @@ export const getUnplayedWorldCupCycle = (
 		.filter(s => s.league === INTL_LEAGUES[0] && s.wcCycleSeason === SEASONS_PER_WORLD_CUP)
 		.map(s => s.wcCycle as number)
 		.find(cycle => !worldCups.some(wc => wc.cycle === cycle));
+
+/** Champion of the most recent finished World Cup (the defending champion). */
+export const getLastWorldCupChampion = (worldCups: TWorldCup[]): ITeamMatch | undefined =>
+	worldCups
+		.filter(wc => wc.champion)
+		.sort((a, b) => b.number - a.number)[0]?.champion ?? undefined;
