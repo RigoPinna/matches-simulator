@@ -9,7 +9,7 @@ import {
 	TLeague,
 } from '../../store';
 import { getCurrentWorldCup } from '../../store/WorldCup/worldCupReducer';
-import { getUnplayedWorldCupCycle } from '../../helpers';
+import { SEASON_LOCK_MESSAGE, getSeasonLock, getUnplayedWorldCupCycle } from '../../helpers';
 import { Main } from '../../components/layouts';
 import {
 	Header,
@@ -59,7 +59,10 @@ export const HomaPage = () => {
 	);
 	const worldCupHistory = useMemo(() => [...worldCups].reverse(), [worldCups]);
 
+	const seasonLock = getSeasonLock(seasons, worldCups);
+
 	const handleCreateNewSeason = () => {
+		if (seasonLock) return;
 		const uuid = getUuid();
 		dispatch({
 			type: '[SEASSON] - NEW SEASSON',
@@ -71,18 +74,12 @@ export const HomaPage = () => {
 
 	const renderHeaderAction = () => {
 		if (seasons.length === 0) return null;
-		if (currentWorldCup) {
-			return (
-				<Button.Primary onClick={() => goToWorldCup(currentWorldCup.uuid)}>
-					<Trophy />
-					World Cup
-				</Button.Primary>
-			);
-		}
-		// The last season of the cycle is still being played.
-		if (unplayedCycle !== undefined) return null;
+		// Disabled while a season or a World Cup is pending / being played.
 		return (
-			<Button.Primary onClick={handleCreateNewSeason}>
+			<Button.Primary
+				onClick={handleCreateNewSeason}
+				disabled={seasonLock !== null}
+				title={seasonLock ? SEASON_LOCK_MESSAGE[seasonLock] : undefined}>
 				<GameFilled />
 				New Seasson
 			</Button.Primary>
@@ -145,6 +142,7 @@ export const HomaPage = () => {
 					</div>
 				) : (
 					<>
+						{seasonLock && <p className={styles.season_lock}>{SEASON_LOCK_MESSAGE[seasonLock]}</p>}
 						<List.Container className={styles.winners_btn}>
 							<List.Item className={styles.winner_item} onClick={() => navigate(`/clubs`)}>
 								<span className={`${styles.badge} ${styles.badge_clubs}`}>

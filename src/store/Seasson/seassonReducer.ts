@@ -23,7 +23,7 @@ import {
 	aggregateTable,
 	createWorldCup,
 	getJourneys,
-	getUnplayedWorldCupCycle,
+	getSeasonLock,
 	getWinner,
 	isMyClub,
 	orderMyTeam,
@@ -38,7 +38,6 @@ import {
 import { getRandomScore } from '../../helpers/getRandomScore';
 import {
 	TWorldCupActionType,
-	getCurrentWorldCup,
 	worldCupReducer,
 } from '../WorldCup/worldCupReducer';
 
@@ -432,13 +431,9 @@ export const seassonReducer: TSeasonReducer = (state = globalState, action) => {
 			};
 		}
 		case '[SEASSON] - NEW SEASSON': {
-			// A World Cup is played between cycles: no new season until it's over.
-			if (
-				getCurrentWorldCup(state.worldCups) ||
-				getUnplayedWorldCupCycle(state.seasons, state.worldCups) !== undefined
-			) {
-				return state;
-			}
+			// Only one season at a time, and none while a World Cup is pending or
+			// being played.
+			if (getSeasonLock(state.seasons, state.worldCups)) return state;
 			const requestedUuid = action.payload as string;
 			const myLeague: TLeague = state.plateClubs.some(club => club.uuid === state.myClub?.uuid)
 				? 'PLATE'

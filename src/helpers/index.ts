@@ -8,3 +8,6 @@ export * from './isMyClub';
 export * from './orderTable';
 export * from './setSeasons';
 export * from './worldCup';
+export * from './getClubMatches';
+export * from './seasonLock';
+export * from './winners';

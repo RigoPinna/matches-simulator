@@ -1,0 +1,257 @@
+/* ---------- Section header ---------- */
+.matches_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin: 32px 0 4px;
+}
+.matches_header h3 {
+	font-size: 20px;
+	font-weight: 700;
+}
+.matches_header h3 span {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--grey-400);
+	margin-left: 6px;
+}
+.filter_btn {
+	padding: 6px 12px;
+	font-size: 13px;
+	font-weight: 600;
+}
+.filter_count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 5px;
+	border-radius: 9px;
+	background: #fff;
+	color: var(--primary);
+	font-size: 11px;
+	font-weight: 700;
+}
+
+/* ---------- Match list ---------- */
+.group {
+	margin-top: 20px;
+}
+.group_title {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--grey-400);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin: 0 0 8px 4px;
+}
+.card {
+	list-style: none;
+	border-radius: var(--border-radius-sm);
+	background: var(--dark-500);
+	overflow: hidden;
+}
+.row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+}
+.row + .row {
+	border-top: 0.5px solid rgba(84, 84, 88, 0.6);
+}
+.result {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	flex-shrink: 0;
+	border-radius: 8px;
+	font-size: 12px;
+	font-weight: 700;
+	color: #fff;
+}
+.result_win {
+	background: var(--color-green);
+}
+.result_draw {
+	background: var(--grey-100);
+}
+.result_loss {
+	background: var(--color-red);
+}
+.row_main {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.score_line {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.team {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex: 1;
+	min-width: 0;
+	font-size: 13px;
+	color: var(--grey-400);
+}
+.team_right {
+	flex-direction: row-reverse;
+	text-align: right;
+}
+.team_own {
+	color: var(--color-white);
+	font-weight: 700;
+}
+.team_name {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.crest {
+	width: 22px;
+	height: 22px;
+	flex-shrink: 0;
+	font-size: 8px;
+	object-fit: contain;
+}
+.score {
+	flex-shrink: 0;
+	min-width: 44px;
+	text-align: center;
+	font-size: 15px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+.meta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 11px;
+	color: var(--grey-200);
+}
+.tag {
+	padding: 2px 6px;
+	border-radius: 5px;
+	font-size: 10px;
+	font-weight: 700;
+}
+.tag_league {
+	background: rgba(10, 132, 255, 0.18);
+	color: #64b0ff;
+}
+.tag_supercup {
+	background: rgba(178, 61, 255, 0.16);
+	color: #ab4cf8;
+}
+.tag_world_cup {
+	background: rgba(225, 177, 69, 0.14);
+	color: #e1b145;
+	outline: 0.5px solid rgba(225, 177, 69, 0.5);
+}
+.more {
+	display: block;
+	width: 100%;
+	margin: 16px 0;
+	padding: 12px;
+	border: none;
+	border-radius: var(--border-radius-sm);
+	background: var(--dark-500);
+	color: var(--primary);
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+}
+.empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+	padding: 40px 16px;
+	color: var(--grey-400);
+	font-size: 15px;
+}
+.empty_reset {
+	border: none;
+	background: none;
+	color: var(--primary);
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+/* ---------- Filters sheet ---------- */
+.filter_section {
+	margin-top: 20px;
+}
+.filter_section:first-child {
+	margin-top: 4px;
+}
+.filter_title {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--grey-400);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin: 0 0 8px 4px;
+}
+.filter_hint {
+	margin: 8px 4px 0;
+	font-size: 12px;
+	color: var(--grey-200);
+	line-height: 1.4;
+}
+.chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	border: 1px solid transparent;
+	border-radius: 18px;
+	background: rgba(118, 118, 128, 0.24);
+	color: var(--color-white);
+	font-size: 13px;
+	cursor: pointer;
+}
+.chip_active {
+	background: rgba(10, 132, 255, 0.22);
+	border-color: var(--primary);
+}
+.chip_crest {
+	width: 18px;
+	height: 18px;
+	font-size: 7px;
+	object-fit: contain;
+}
+.chip_count {
+	font-size: 11px;
+	color: var(--grey-400);
+}
+.sheet_reset {
+	flex: 0 0 auto;
+	justify-content: center;
+	padding: 12px 16px;
+	font-size: 15px;
+}
+.sheet_apply {
+	flex: 1;
+	justify-content: center;
+	padding: 12px;
+	border-radius: 12px;
+	font-size: 15px;
+	font-weight: 600;
+}

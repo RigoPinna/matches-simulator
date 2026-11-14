@@ -11,3 +11,5 @@ export * from './LastMatchesRecord';
 export { default as Button } from './Button';
 export { default as List } from './List';
 export * from './LastMatches';
+export * from './BottomSheet';
+export * from './SegmentedControl';
