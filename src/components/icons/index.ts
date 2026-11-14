@@ -13,3 +13,4 @@ export * from './Trophy';
 export * from './Win';
 export * from './Draw';
 export * from './Lost';
+export * from './Filter';
