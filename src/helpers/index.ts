@@ -11,3 +11,5 @@ export * from './worldCup';
 export * from './getClubMatches';
 export * from './seasonLock';
 export * from './winners';
+export * from './clubProfile';
+export * from './standingsRace';

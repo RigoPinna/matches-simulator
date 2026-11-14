@@ -100,7 +100,7 @@ export const Final = () => {
 							{winner && (
 								<div className={styles.champion_container}>
 									<h1>Supercup 🏆</h1>
-									<ClubBadge className={styles.champion_team} image={winner.image} name={winner.name} color={winner.color} />
+									<ClubBadge className={styles.champion_team} uuid={winner.uuid} image={winner.image} name={winner.name} color={winner.color} />
 
 								</div>
 							)}
