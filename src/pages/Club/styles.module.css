@@ -11,11 +11,23 @@
 	height: 64px;
 	font-size: 20px;
 }
+.statistics {
+	width: 100%;
+	overflow-x: auto;
+	overflow-y: none;
+}
 .list {
 	display: flex;
-	padding: 27px 0;
+	flex-direction: row;
+	width: 400px;
+	flex-wrap: nowrap;
+
+	/* padding: 27px 0; */
+	margin: 27px 0 0;
 	list-style: none;
-	justify-content: space-around;
+	gap: 28px;
+	height: 100px;
+	align-items: center;
 }
 .list_item {
 	display: flex;
