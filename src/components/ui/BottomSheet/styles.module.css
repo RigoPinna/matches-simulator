@@ -1,0 +1,102 @@
+.root {
+	position: fixed;
+	inset: 0;
+	z-index: 20;
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+}
+.backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	animation: fade-in 0.26s ease-out both;
+}
+.sheet {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 446px;
+	max-height: 88vh;
+	border-radius: 23px 23px 0 0;
+	background: #1c1c1e;
+	box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+	animation: slide-up 0.32s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+	transition: transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1);
+	padding-bottom: env(safe-area-inset-bottom);
+}
+.closing .backdrop {
+	animation: fade-out 0.26s ease-in both;
+}
+.closing .sheet {
+	animation: slide-down 0.26s ease-in both;
+}
+.drag_area {
+	padding: 8px 16px 12px;
+	cursor: grab;
+	touch-action: none;
+	user-select: none;
+}
+.drag_area:active {
+	cursor: grabbing;
+}
+.grabber {
+	display: block;
+	width: 36px;
+	height: 5px;
+	margin: 0 auto 14px;
+	border-radius: 3px;
+	background: rgba(235, 235, 245, 0.3);
+}
+.title {
+	font-size: 20px;
+	font-weight: 700;
+}
+.body {
+	flex: 1;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: 0 16px 16px;
+}
+.footer {
+	display: flex;
+	gap: 10px;
+	padding: 12px 16px 16px;
+	border-top: 0.5px solid rgba(84, 84, 88, 0.6);
+}
+@keyframes slide-up {
+	from {
+		transform: translateY(100%);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+@keyframes slide-down {
+	/* Starts from wherever the user dragged the sheet to. */
+	from {
+		transform: translateY(var(--drag, 0));
+	}
+	to {
+		transform: translateY(100%);
+	}
+}
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+}
+@keyframes fade-out {
+	to {
+		opacity: 0;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.sheet,
+	.closing .sheet,
+	.backdrop,
+	.closing .backdrop {
+		animation-duration: 0.01s;
+	}
+}
