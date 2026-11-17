@@ -70,3 +70,45 @@ export const getStandingsFrames = (season: TSeason): TRaceFrame[] => {
 	});
 	return frames;
 };
+
+/**
+ * Positions gained (+) or lost (−) by each club since the previous journey:
+ * compares the current table with the standings before the latest journey
+ * that has results. Empty before the second journey (nothing to compare).
+ */
+export const getPositionChanges = (season: TSeason): Map<string, number> => {
+	const changes = new Map<string, number>();
+	const journeys = season.fase.regular.matches.matches;
+	const done = journeys.filter(j => j.status === 'DONE').length;
+	const partial = journeys[done]?.value.some(m => m.status === 'DONE') ?? false;
+	// Standings before the journey currently reflected in the table.
+	const previousIndex = partial ? done : done - 1;
+	if (previousIndex < 1) return changes;
+	const previous = getStandingsFrames(season)[previousIndex].rows;
+	season.table.forEach((row, position) => {
+		const before = previous.find(p => p.club.uuid === row.club.uuid);
+		if (before) changes.set(row.club.uuid, before.position - position);
+	});
+	return changes;
+};
+
+export type TFormResult = 'WIN' | 'DRAW' | 'LOSS';
+
+/** Last `size` results of each club in this season (oldest → newest). */
+export const getSeasonForm = (season: TSeason, size = 5): Map<string, TFormResult[]> => {
+	const form = new Map<string, TFormResult[]>(season.table.map(row => [row.club.uuid, []]));
+	const phases = [season.fase.regular, season.fase.semifinal, season.fase.final];
+	for (const fase of phases) {
+		for (const journey of fase.matches.matches) {
+			for (const { local, visit, status } of journey.value) {
+				if (status !== 'DONE' || typeof local.score !== 'number' || typeof visit.score !== 'number') continue;
+				const l: TFormResult = local.score > visit.score ? 'WIN' : local.score < visit.score ? 'LOSS' : 'DRAW';
+				const v: TFormResult = l === 'WIN' ? 'LOSS' : l === 'LOSS' ? 'WIN' : 'DRAW';
+				form.get(local.uuid)?.push(l);
+				form.get(visit.uuid)?.push(v);
+			}
+		}
+	}
+	for (const [uuid, results] of form) form.set(uuid, results.slice(-size));
+	return form;
+};
