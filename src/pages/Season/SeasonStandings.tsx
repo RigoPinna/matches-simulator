@@ -6,12 +6,15 @@ import styles from './standings.module.css';
 
 export type TTableView = 'season' | 'total' | 'worldCup';
 type TZone = 'supercup' | 'promotion' | 'relegation' | 'qualify';
+/** Legend entries: the zones plus the current leader (season view only). */
+type TLegendKey = TZone | 'leader';
 
 const ROW = 38;
 /** Scroll distance in one direction before switching between strip and full table. */
 const SCROLL_THRESHOLD = 12;
 
-const ZONE_LABEL: Record<TZone, string> = {
+const ZONE_LABEL: Record<TLegendKey, string> = {
+	leader: 'Champion',
 	supercup: 'Supercup',
 	promotion: 'Promotion',
 	relegation: 'Relegation',
@@ -39,11 +42,16 @@ type TBoardProps = {
 	changes?: Map<string, number>;
 	form?: Map<string, TFormResult[]>;
 	myClubUuid?: string;
+	/** Paint the 1st place zone green (season table only). */
+	highlightLeader?: boolean;
 };
 
 /** Compact standings. Rows keep a stable DOM order and slide to their position. */
-const Board = ({ rows, zones, changes, form, myClubUuid }: TBoardProps) => {
-	const stable = useMemo(() => [...rows].sort((a, b) => a.club.uuid.localeCompare(b.club.uuid)), [rows]);
+const Board = ({ rows, zones, changes, form, myClubUuid, highlightLeader }: TBoardProps) => {
+	const stable = useMemo(
+		() => [...rows].sort((a, b) => a.club.uuid.localeCompare(b.club.uuid)),
+		[rows],
+	);
 	const positions = new Map(rows.map((row, i) => [row.club.uuid, i]));
 	return (
 		<div>
@@ -54,7 +62,9 @@ const Board = ({ rows, zones, changes, form, myClubUuid }: TBoardProps) => {
 				<span className={styles.col_num}>GD</span>
 				{form && <span className={styles.col_form}>Form</span>}
 			</div>
-			<ol className={styles.board} style={{ height: rows.length * ROW }}>
+			<ol
+				className={`${styles.board} ${highlightLeader ? styles.board_leader : ''}`}
+				style={{ height: rows.length * ROW }}>
 				{stable.map(row => {
 					const position = positions.get(row.club.uuid)!;
 					const zone = zones.get(position);
@@ -66,6 +76,7 @@ const Board = ({ rows, zones, changes, form, myClubUuid }: TBoardProps) => {
 							key={row.club.uuid}
 							className={`${styles.row} ${mine ? styles.row_mine : ''}`}
 							style={{ transform: `translateY(${position * ROW}px)` }}
+							data-position={position + 1}
 							aria-label={`${position + 1}. ${row.club.name}, ${row.pts} points`}>
 							<span className={`${styles.zone} ${zone ? styles[`zone_${zone}`] : ''}`} />
 							<span className={styles.col_pos}>
@@ -73,7 +84,9 @@ const Board = ({ rows, zones, changes, form, myClubUuid }: TBoardProps) => {
 								{changes && (
 									<span
 										className={`${styles.change} ${change > 0 ? styles.up : change < 0 ? styles.down : ''}`}
-										aria-label={change ? `${change > 0 ? 'up' : 'down'} ${Math.abs(change)}` : 'no change'}>
+										aria-label={
+											change ? `${change > 0 ? 'up' : 'down'} ${Math.abs(change)}` : 'no change'
+										}>
 										{change > 0 ? `▲${change}` : change < 0 ? `▼${-change}` : '–'}
 									</span>
 								)}
@@ -88,7 +101,9 @@ const Board = ({ rows, zones, changes, form, myClubUuid }: TBoardProps) => {
 								<span className={styles.col_form}>
 									{Array.from({ length: 5 }, (_, i) => {
 										const result = results[i - (5 - results.length)];
-										return <i key={i} className={`${styles.dot} ${result ? FORM_CLASS[result] : ''}`} />;
+										return (
+											<i key={i} className={`${styles.dot} ${result ? FORM_CLASS[result] : ''}`} />
+										);
 									})}
 								</span>
 							)}
@@ -155,11 +170,27 @@ export const SeasonStandings = ({ season, view, rows, hint }: ISeasonStandings) 
 	const [allStats, setAllStats] = useState(false);
 
 	const isSeasonView = view === 'season';
-	const changes = useMemo(() => (isSeasonView ? getPositionChanges(season) : undefined), [season, isSeasonView]);
-	const form = useMemo(() => (isSeasonView ? getSeasonForm(season) : undefined), [season, isSeasonView]);
+	const changes = useMemo(
+		() => (isSeasonView ? getPositionChanges(season) : undefined),
+		[season, isSeasonView],
+	);
+	const form = useMemo(
+		() => (isSeasonView ? getSeasonForm(season) : undefined),
+		[season, isSeasonView],
+	);
 	const zones = getZones(view, season, rows.length);
-	const legend = [...new Set(zones.values())];
-	const boardProps = { rows, zones, changes, form, myClubUuid: myClub?.uuid };
+	const legend: TLegendKey[] = [
+		...(isSeasonView ? ['leader' as const] : []),
+		...new Set(zones.values()),
+	];
+	const boardProps = {
+		rows,
+		zones,
+		changes,
+		form,
+		myClubUuid: myClub?.uuid,
+		highlightLeader: isSeasonView,
+	};
 	const floating = { top, '--max-h': `calc(100vh - ${top + 16}px)` } as CSSProperties;
 
 	const footer = (

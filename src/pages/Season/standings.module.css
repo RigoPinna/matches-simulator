@@ -51,6 +51,11 @@
 .zone_qualify {
 	background: #e1b145;
 }
+/* Current leader (season table only): whoever is 1st right now, rows reorder live. */
+.board_leader .row[data-position='1'] .zone,
+.zone_leader {
+	background: var(--color-green);
+}
 .zone_promotion {
 	background: var(--color-green);
 }
