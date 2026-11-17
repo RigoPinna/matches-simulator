@@ -19,6 +19,11 @@ const TYPE_ACTION = {
 	FINAL: '[SEASSON-FINAL] - ADD MATCH SCORE',
 };
 Object.freeze(TYPE_ACTION);
+
+type TJourneyState = 'NOW' | 'PLAYED' | 'UPCOMING';
+const STATE_LABEL: Record<TJourneyState, string> = { NOW: 'Now', PLAYED: 'Played', UPCOMING: 'Upcoming' };
+
+/** One journey (or knockout round) as a card of scoreboard rows. */
 export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 	const { myClub, dispatch } = useContext(SeassonContext);
 	const { season } = useCurrentSeasonParams();
@@ -39,42 +44,46 @@ export const MatchList = ({ title, matches, isCurrent, type }: IMatchList) => {
 			clearTimeout(id);
 		}, 900);
 	};
-	function showButton() {
-		const oltherMatches = matches.value.filter(
-			match => match.local.uuid !== myClub?.uuid && match.visit.uuid !== myClub?.uuid,
-		);
+	const isMine = (m: TJourney['value'][number]) =>
+		m.local.uuid === myClub?.uuid || m.visit.uuid === myClub?.uuid;
+	const pendingOthers = matches.value.some(m => !isMine(m) && m.status === 'TODO');
+	const pendingMine = matches.value.some(m => isMine(m) && m.status === 'TODO');
+	const state: TJourneyState =
+		matches.status === 'DONE' ? 'PLAYED' : isCurrent ? 'NOW' : 'UPCOMING';
+	// The user's pending match goes first so it's the first thing to see.
+	const ordered = [...matches.value].sort(
+		(a, b) => Number(isMine(b) && b.status === 'TODO') - Number(isMine(a) && a.status === 'TODO'),
+	);
+	const canSimulate = isCurrent && pendingOthers && !readOnly;
 
-		const pendingMatches = oltherMatches.some(match => match.status === 'TODO');
-
-		return pendingMatches
-
-	}
 	return (
-		<div className={`${styles.container} ${styles.current_matches}`}>
+		<section className={`${styles.card} ${state === 'NOW' ? styles.card_now : ''}`}>
 			<div className={styles.header}>
-				<h3>{title}</h3>
-				{isCurrent && (
-					<>
-						{!isLoading ? (
-							<>
-								{showButton() && !readOnly && (
-									<Button.Primary onClick={simulateMatches} className={styles.btn_simulate}>
-										<Fire />
-										Simulate
-									</Button.Primary>
-								)}
-							</>
-						) : (
+				{title && <h3>{title}</h3>}
+				<span className={`${styles.state} ${styles[`state_${state.toLowerCase()}`]}`}>
+					{STATE_LABEL[state]}
+				</span>
+				{isCurrent && (isLoading || canSimulate) && (
+					<div className={styles.header_action}>
+						{isLoading ? (
 							<Loader />
+						) : (
+							<Button.Primary onClick={simulateMatches} className={styles.btn_simulate}>
+								<Fire />
+								Simulate
+							</Button.Primary>
 						)}
-					</>
+					</div>
 				)}
 			</div>
+			{isCurrent && !pendingOthers && pendingMine && !readOnly && (
+				<p className={styles.hint}>Only your match is left — enter your score to finish the journey.</p>
+			)}
 			<ul className={styles.matches_list}>
-				{matches.value.map(match => (
+				{ordered.map(match => (
 					<ItemMatch key={match.uuid} {...match} type={type} jid={matches.jid} />
 				))}
 			</ul>
-		</div>
+		</section>
 	);
 };

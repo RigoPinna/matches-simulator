@@ -1,62 +1,154 @@
-.container {
-	padding: 33px 0;
-	opacity: 0.5;
+/* ---------- Journey card ---------- */
+.card {
+	margin: 16px 0;
+	padding: 14px 12px 6px;
+	border-radius: var(--border-radius-sm);
+	background: var(--dark-500);
 }
-.current_matches {
-	opacity: 1;
+/* Accent border only on the journey being played. */
+.card_now {
+	outline: 1px solid rgba(10, 132, 255, 0.55);
 }
 .header {
 	display: flex;
-	width: 100%;
-	height: fit-content;
-	flex-flow: row nowrap;
-	gap: 12px;
-	padding-bottom: 16px;
+	align-items: center;
+	gap: 8px;
+	min-height: 32px;
+	padding: 0 4px 10px;
 }
 .header h3 {
-	font-size: 18px;
-	font-weight: bold;
+	font-size: 16px;
+	font-weight: 700;
 	color: #fff;
 }
+.state {
+	padding: 2px 8px;
+	border-radius: 10px;
+	font-size: 11px;
+	font-weight: 700;
+}
+.state_now {
+	background: rgba(10, 132, 255, 0.2);
+	color: #64b0ff;
+}
+.state_played {
+	background: rgba(16, 200, 104, 0.15);
+	color: var(--color-green);
+}
+.state_upcoming {
+	background: rgba(118, 118, 128, 0.24);
+	color: var(--grey-400);
+}
+.header_action {
+	display: flex;
+	margin-left: auto;
+}
+.btn_simulate {
+	padding: 7px 14px;
+	font-size: 14px;
+	font-weight: 600;
+}
+.hint {
+	margin: -2px 4px 10px;
+	font-size: 12px;
+	color: var(--grey-400);
+}
+
+/* ---------- Scoreboard rows ---------- */
 .matches_list {
 	list-style: none;
 	color: #fff;
-	font-size: 12px;
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-}
-.club {
-	gap: 4px;
-	width: fit-content;
 }
 .match {
-	display: flex;
-	flex-direction: row;
-	width: 100%;
-	gap: 30px;
-	align-items: center;
-	padding-left: 20px;
 	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+	align-items: center;
+	column-gap: 8px;
+	min-height: 48px;
+	padding: 8px 4px;
+	border-radius: 10px;
 }
-.match_player {
+.matches_list > .match + .match {
+	border-top: 0.5px solid rgba(84, 84, 88, 0.6);
+}
+.club {
+	gap: 8px;
+	min-width: 0;
+}
+.club p {
+	font-size: 14px;
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.club img {
+	height: 26px !important;
+	width: 26px;
+	object-fit: contain;
+}
+/* Local team mirrors the visitor: name then crest, pushed against the score. */
+.club_local {
+	flex-direction: row-reverse;
+	text-align: right;
+}
+.winner p {
+	font-weight: 800;
+}
+.loser {
+	opacity: 0.45;
+}
+.score {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	height: 30px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--grey-400);
+}
+.score_played {
+	background: var(--dark-200);
+	color: #fff;
+	font-size: 16px;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+}
+.score_sep {
+	color: var(--grey-100);
+	font-weight: 400;
+}
+
+/* The user's match: neutral, a small star and bold names (no accent color). */
+.match_own .club p {
+	font-weight: 700;
+}
+.match_mine {
+	cursor: pointer;
+}
+.match_mine:hover {
+	background: rgba(255, 255, 255, 0.04);
+}
+.match_mine:focus-visible {
+	outline: 2px solid var(--primary);
+}
+.mine_star {
 	position: absolute;
-	left: 0;
+	left: 4px;
 	top: 50%;
+	display: flex;
+	color: var(--grey-400);
 	transform: translateY(-50%);
 }
-.match_score {
-	font-size: 14px;
-	font-weight: bold;
-	width: 50px;
-	text-align: center;
+.mine_star svg {
+	width: 12px;
+	height: 12px;
 }
-.btn_simulate {
-	display: none;
-}
-.current_matches .btn_simulate {
-	display: flex;
-}
+
+/* ---------- Score modal ---------- */
 .wrapper_input_modal {
 	display: flex;
 	flex-direction: row;
