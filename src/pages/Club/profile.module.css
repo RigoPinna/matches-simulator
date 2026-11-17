@@ -408,3 +408,21 @@
 	font-size: 11px;
 	color: var(--grey-400);
 }
+.ribbons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px;
+}
+/* League champion: silver, like its crest badge. */
+.ribbon_league {
+	background: linear-gradient(135deg, rgba(233, 236, 241, 0.18), rgba(160, 168, 180, 0.18));
+	border-color: #c9ced6;
+	color: #e9ecf1;
+}
+/* Supercup champion: purple, like its crest badge. */
+.ribbon_supercup {
+	background: rgba(171, 76, 248, 0.16);
+	border-color: #ab4cf8;
+	color: #d2a2ff;
+}
