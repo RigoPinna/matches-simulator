@@ -4,22 +4,61 @@
 	flex-shrink: 0;
 	vertical-align: middle;
 }
+
+/* ---------- Big crests: trophy badges ---------- */
 /* Trophy as a background so generic "img" rules of the parents never touch it. */
 .mark {
 	position: absolute;
-	right: -12%;
+	right: -10%;
 	bottom: -8%;
-	z-index: 1;
-	width: 46%;
-	min-width: 12px;
-	max-width: 34px;
+	width: 36%;
+	max-width: 28px;
 	aspect-ratio: 1 / 1;
 	border-radius: 50%;
-	border: 1.5px solid #e1b145;
+	border: 1.5px solid;
 	background-color: #111;
 	background-position: center 45%;
 	background-repeat: no-repeat;
-	background-size: 64%;
 	box-shadow: 0 0 0 1.5px var(--bg-body), 0 2px 6px rgba(0, 0, 0, 0.5);
 	pointer-events: none;
+}
+.mark_world_cup {
+	border-color: #e1b145;
+	background-size: 64%;
+}
+/* League champion: silver ring, tall league trophy. */
+.mark_league {
+	border-color: #c9ced6;
+	background-size: auto 70%;
+}
+/* Supercup champion: purple ring (the app's supercup color). */
+.mark_supercup {
+	border-color: #ab4cf8;
+	background-size: auto 70%;
+}
+
+/* ---------- Small crests: colored dots under the crest ---------- */
+.dots {
+	position: absolute;
+	left: 50%;
+	bottom: -5px;
+	display: flex;
+	gap: 2px;
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+.dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	box-shadow: 0 0 0 1.5px var(--bg-body);
+}
+.dot_world_cup {
+	background: #e1b145;
+}
+.dot_league {
+	background: #c9ced6;
+}
+.dot_supercup {
+	background: #ab4cf8;
 }

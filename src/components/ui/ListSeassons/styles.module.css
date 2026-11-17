@@ -51,7 +51,8 @@
 	width: auto !important;
 	gap: 5px;
 }
-.winner > img {
+/* Descendant (not ">"): champion crests are wrapped by ChampionMark. */
+.winner img {
 	height: 18px;
 }
 .promotion_item {

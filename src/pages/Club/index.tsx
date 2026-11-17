@@ -14,7 +14,7 @@ import {
 	getNextMatch,
 	getOpponents,
 } from '../../helpers';
-import { useModal, useWorldCupChampionUuid } from '../../hooks';
+import { useChampionTitles, useModal } from '../../hooks';
 import { ClubHero } from './ClubHero';
 import { ClubTrophies } from './ClubTrophies';
 import { ClubStats, HeadToHead } from './ClubStats';
@@ -29,7 +29,7 @@ export const ClubPage = () => {
 	const navigate = useNavigate();
 	const { cid = '' } = useParams();
 	const { clubs, plateClubs, intlClubs, seasons, worldCups } = useContext(SeassonContext);
-	const championUuid = useWorldCupChampionUuid();
+	const titles = useChampionTitles(cid);
 	const filtersSheet = useModal(false);
 	const [filters, setFilters] = useState<TClubMatchFilters>(DEFAULT_CLUB_MATCH_FILTERS);
 	const resetFilters = useCallback(() => setFilters(DEFAULT_CLUB_MATCH_FILTERS), []);
@@ -76,7 +76,7 @@ export const ClubPage = () => {
 					latest={history[0]}
 					form={form}
 					next={next}
-					isWorldCupChampion={club.uuid === championUuid}
+					titles={titles}
 				/>
 				<ClubTrophies club={club} isMexican={isMexican} showPlate={showPlate} />
 

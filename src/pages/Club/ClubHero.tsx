@@ -1,8 +1,14 @@
 import { CSSProperties } from 'react';
 import { IClub, LEAGUE_INFO } from '../../store';
-import { TMatchResult, TNextMatch, TSeasonRow, ordinal } from '../../helpers';
+import { TChampionTitle, TMatchResult, TNextMatch, TSeasonRow, ordinal } from '../../helpers';
 import { ClubBadge } from '../../components/ui';
 import styles from './profile.module.css';
+
+const RIBBON_CLASS: Record<TChampionTitle['kind'], string> = {
+	WORLD_CUP: '',
+	LEAGUE: styles.ribbon_league,
+	SUPERCUP: styles.ribbon_supercup,
+};
 
 const RESULT_LETTER: Record<TMatchResult, string> = { WIN: 'W', DRAW: 'D', LOSS: 'L' };
 const RESULT_CLASS: Record<TMatchResult, string> = {
@@ -18,11 +24,12 @@ interface IClubHero {
 	/** Last results, oldest → newest. */
 	form: TMatchResult[];
 	next?: TNextMatch;
-	isWorldCupChampion: boolean;
+	/** Titles the club currently holds (World Cup, league). */
+	titles: TChampionTitle[];
 }
 
 /** Club header: crest, name, where it stands now, recent form and next match. */
-export const ClubHero = ({ club, latest, form, next, isWorldCupChampion }: IClubHero) => (
+export const ClubHero = ({ club, latest, form, next, titles }: IClubHero) => (
 	<section className={styles.hero} style={{ '--club-color': club.color } as CSSProperties}>
 		<ClubBadge className={styles.hero_crest} {...club} />
 		<h2 className={styles.hero_name}>{club.name}</h2>
@@ -33,7 +40,17 @@ export const ClubHero = ({ club, latest, form, next, isWorldCupChampion }: IClub
 				{latest.isCurrent && <span className={styles.live}>Live</span>}
 			</p>
 		)}
-		{isWorldCupChampion && <span className={styles.ribbon}>🏆 World Cup champion</span>}
+		{titles.length > 0 && (
+			<div className={styles.ribbons}>
+				{titles.map(title => (
+					<span
+						key={title.kind}
+						className={`${styles.ribbon} ${RIBBON_CLASS[title.kind]}`}>
+						🏆 {title.label}
+					</span>
+				))}
+			</div>
+		)}
 
 		{form.length > 0 && (
 			<div className={styles.form_block}>

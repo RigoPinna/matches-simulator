@@ -5,6 +5,7 @@ import { SeassonContext, isReadOnlyLeague } from '../../store';
 import styles from './styles.module.css';
 import confetti from 'canvas-confetti';
 import { TBlockedFase } from '../../store/Seasson/seassonReducer';
+import { JourneyGuide } from './JourneyGuide';
 export const StatusJourney = () => {
 	const { myClub, dispatch } = useContext(SeassonContext);
 	const { season } = useCurrentSeasonParams();
@@ -39,26 +40,30 @@ export const StatusJourney = () => {
 			payload: season.uuid,
 		});
 	};
+	const journeys = regular?.matches.matches ?? [];
+	const total = journeys.length;
+	const renderJourney = (index: number, isCurrent: boolean) => (
+		<MatchList
+			type='REGULAR'
+			key={`jy=${journeys[index].jid}`}
+			title={`Journey ${index + 1} of ${total}`}
+			matches={journeys[index]}
+			isCurrent={isCurrent}
+		/>
+	);
 	switch (regular?.status) {
 		case 'ACTIVE': {
-			const totalJourney = regular.matches.matches.length;
+			// Always the full list, in order; the current journey is marked "Now".
 			return (
 				<>
-					{regular.matches.matches.map((journey, i) => (
-						<MatchList
-							type='REGULAR'
-							key={`jy=${journey.jid}`}
-							title={`Journey ${i + 1} of ${totalJourney}`}
-							matches={journey}
-							isCurrent={regular.currentJourney === i + 1}
-						/>
-					))}
+					{/* Instructions once, above the journeys (not in read-only leagues). */}
+					{!readOnly && <JourneyGuide />}
+					{journeys.map((_, i) => renderJourney(i, regular.currentJourney === i + 1))}
 				</>
 			);
 		}
 		case 'FINISHED': {
 			const position = season.table.findIndex(item => item.club.uuid === myClub.uuid) + 1;
-			const totalJourney = regular.matches.matches.length;
 			return (
 				<>
 					<div className={styles.status_container}>
@@ -78,32 +83,7 @@ export const StatusJourney = () => {
 							</>
 						)}
 					</div>
-					{regular.matches.matches.map((journey, i) => (
-						<MatchList
-							type='REGULAR'
-							key={`jy=${journey.jid}`}
-							title={`Journey ${i + 1} of ${totalJourney}`}
-							matches={journey}
-							isCurrent={false}
-						/>
-					))}
-					<div className={styles.status_container}>
-						<h2>The regular season has ended</h2>
-						{readOnly ? (
-							<p>The semifinals start when your league continues</p>
-						) : (
-							<>
-								{position <= 4 ? (
-									<p>Congratulations! your team is in the Supercup 🎉</p>
-								) : (
-									<p>Sorry! Your team will not be in the SuperCup</p>
-								)}
-								<Button.Primary className={styles.button} onClick={goToSemifinals}>
-									Continue
-								</Button.Primary>
-							</>
-						)}
-					</div>
+					{journeys.map((_, i) => renderJourney(i, false))}
 				</>
 			);
 		}

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useCurrentSeasonParams } from '../../hooks';
 import { Main } from '../../components/layouts';
-import { Button, ClubBadge, Header, Table } from '../../components/ui';
+import { Button, Header, SegmentedControl, TSegment } from '../../components/ui';
 import { ArrowLeft } from '../../components/icons';
 import { StatusJourney } from './StatusJournay';
 import { StatusSemifinals } from './StatusSemifinals';
@@ -9,6 +9,7 @@ import { Final } from './Final';
 import styles from './styles.module.css';
 import { Finished } from './Finished';
 import { StandingsRace } from './StandingsRace';
+import { SeasonStandings, TTableView } from './SeasonStandings';
 import {
 	LEAGUE_INFO,
 	QUALIFIERS_PER_LEAGUE,
@@ -19,8 +20,6 @@ import {
 } from '../../store';
 import { aggregateTable, aggregateWorldCupTable, getCycleRange } from '../../helpers';
 import { useContext, useMemo, useState } from 'react';
-
-type TTableView = 'season' | 'total' | 'worldCup';
 
 export const SeasonPage = () => {
 	const navigate = useNavigate();
@@ -41,83 +40,41 @@ export const SeasonPage = () => {
 	const [cycleStart, cycleEnd] = getCycleRange(season.number);
 	const hasPromotion = season.league === 'PRIMERA' || season.league === 'PLATE';
 	const hasWorldCup = WORLD_CUP_LEAGUES.includes(season.league) && !!season.wcCycle;
-	const relegationHint =
-		season.league === 'PRIMERA'
-			? 'Last place gets relegated to Plate Ligue'
-			: 'First place gets promoted to Primera División';
-	const worldCupHint = `Top ${QUALIFIERS_PER_LEAGUE} qualify for World Cup ${season.wcCycle} · season ${season.wcCycleSeason} of ${SEASONS_PER_WORLD_CUP}`;
+	// The tabs replace the page title, so the season tab carries the league name.
+	const seasonLabel = `${season.league === 'PRIMERA' ? 'Season' : LEAGUE_INFO[season.league].short} ${season.number}`;
+	const tabs: TSegment<TTableView>[] = [
+		{ value: 'season', label: seasonLabel },
+		...(hasPromotion ? [{ value: 'total' as const, label: `Total ${cycleStart}-${cycleEnd}` }] : []),
+		...(hasWorldCup ? [{ value: 'worldCup' as const, label: 'World Cup' }] : []),
+	];
+	const hints: Record<TTableView, string | undefined> = {
+		season: isReadOnlyLeague(season.league) ? 'Simulated alongside your league' : undefined,
+		total:
+			season.league === 'PRIMERA'
+				? 'Last place gets relegated to Plate Ligue'
+				: 'First place gets promoted to Primera División',
+		worldCup: `World Cup ${season.wcCycle} · season ${season.wcCycleSeason} of ${SEASONS_PER_WORLD_CUP} · top ${QUALIFIERS_PER_LEAGUE} qualify`,
+	};
 	const tables = {
 		season: season.table,
 		total: totalTable,
 		worldCup: worldCupTable,
 	};
-	const getLastWinner = () => {
-		const leagueSeasons = seasons
-			.filter(s => s.league === season.league)
-			.sort((a, b) => a.number - b.number);
-		const currentIndex = leagueSeasons.findIndex(s => s.uuid === season.uuid);
-		const lastSeason = currentIndex > 0 ? leagueSeasons[currentIndex - 1] : undefined;
-		if (lastSeason && lastSeason.winner) {
-			return lastSeason.table[0];
-		}
-		return null;
-	};
-	const lastWinner = getLastWinner();
-	const title = season.league === 'PRIMERA' ? 'Season' : LEAGUE_INFO[season.league].short;
 	return (
 		<>
-			<Header>
+			<Header className={styles.header}>
 				<Button.Secondary onClick={() => navigate(-1)}>
 					<ArrowLeft />
 				</Button.Secondary>
-				<h1>
-					{title} {season.number}
-				</h1>
-				<div className={styles.last_winner}>
-					{lastWinner && (
-						<>
-							<ClubBadge
-								uuid={lastWinner.club.uuid}
-								image={lastWinner.club.image}
-								name={lastWinner.club.name}
-								color={lastWinner.club.color}
-							/>
-							<span>Last winner</span>
-						</>
+				<div className={styles.header_tabs}>
+					{tabs.length > 1 ? (
+						<SegmentedControl label='Table' value={view} options={tabs} onChange={setView} />
+					) : (
+						<h1 className={styles.header_title}>{seasonLabel}</h1>
 					)}
 				</div>
 			</Header>
-			<div className={styles.container_table}>
-				<div className={styles.wrapper_table}>
-					<div className={styles.table_tabs}>
-						<button
-							className={`${styles.table_tab} ${view === 'season' ? styles.table_tab_active : ''}`}
-							onClick={() => setView('season')}>
-							Season {season.number}
-						</button>
-						{hasPromotion && (
-							<button
-								className={`${styles.table_tab} ${view === 'total' ? styles.table_tab_active : ''}`}
-								onClick={() => setView('total')}>
-								Total {cycleStart}-{cycleEnd}
-							</button>
-						)}
-						{hasWorldCup && (
-							<button
-								className={`${styles.table_tab} ${view === 'worldCup' ? styles.table_tab_active : ''}`}
-								onClick={() => setView('worldCup')}>
-								World Cup 🏆
-							</button>
-						)}
-					</div>
-					{view === 'total' && <p className={styles.table_hint}>{relegationHint}</p>}
-					{view === 'worldCup' && <p className={styles.table_hint}>{worldCupHint}</p>}
-					{isReadOnlyLeague(season.league) && view === 'season' && (
-						<p className={styles.table_hint}>Simulated alongside your league</p>
-					)}
-					<Table table={tables[view] || []} />
-				</div>
-			</div>
+			<SeasonStandings season={season} view={view} rows={tables[view] || []} hint={hints[view]} />
 			<Main>
 				{/* Replay of the table, journey by journey, once the regular season is over. */}
 				{season.fase.regular.status !== 'ACTIVE' && <StandingsRace season={season} />}
