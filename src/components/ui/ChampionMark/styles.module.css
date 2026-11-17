@@ -9,17 +9,29 @@
 	position: absolute;
 	right: -12%;
 	bottom: -8%;
-	z-index: 1;
 	width: 46%;
 	min-width: 12px;
 	max-width: 34px;
 	aspect-ratio: 1 / 1;
 	border-radius: 50%;
-	border: 1.5px solid #e1b145;
+	border: 1.5px solid;
 	background-color: #111;
 	background-position: center 45%;
 	background-repeat: no-repeat;
-	background-size: 64%;
 	box-shadow: 0 0 0 1.5px var(--bg-body), 0 2px 6px rgba(0, 0, 0, 0.5);
 	pointer-events: none;
+}
+.mark_world_cup {
+	border-color: #e1b145;
+	background-size: 64%;
+}
+/* League champion: silver ring, tall league trophy. */
+.mark_league {
+	border-color: #c9ced6;
+	background-size: auto 70%;
+}
+/* Supercup champion: purple ring (the app's supercup color). */
+.mark_supercup {
+	border-color: #ab4cf8;
+	background-size: auto 70%;
 }
