@@ -4,14 +4,15 @@
 	flex-shrink: 0;
 	vertical-align: middle;
 }
+
+/* ---------- Big crests: trophy badges ---------- */
 /* Trophy as a background so generic "img" rules of the parents never touch it. */
 .mark {
 	position: absolute;
-	right: -12%;
+	right: -10%;
 	bottom: -8%;
-	width: 46%;
-	min-width: 12px;
-	max-width: 34px;
+	width: 36%;
+	max-width: 28px;
 	aspect-ratio: 1 / 1;
 	border-radius: 50%;
 	border: 1.5px solid;
@@ -34,4 +35,30 @@
 .mark_supercup {
 	border-color: #ab4cf8;
 	background-size: auto 70%;
+}
+
+/* ---------- Small crests: colored dots under the crest ---------- */
+.dots {
+	position: absolute;
+	left: 50%;
+	bottom: -5px;
+	display: flex;
+	gap: 2px;
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+.dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	box-shadow: 0 0 0 1.5px var(--bg-body);
+}
+.dot_world_cup {
+	background: #e1b145;
+}
+.dot_league {
+	background: #c9ced6;
+}
+.dot_supercup {
+	background: #ab4cf8;
 }
